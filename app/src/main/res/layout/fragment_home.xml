@@ -1,0 +1,536 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    tools:context=".HomeFragment">
+
+
+    <!--    <com.airbnb.lottie.LottieAnimationView-->
+    <!--        android:id="@+id/snow"-->
+    <!--        android:layout_width="match_parent"-->
+    <!--        android:layout_height="300dp"-->
+    <!--        android:scaleType="fitXY"-->
+    <!--        app:lottie_autoPlay="true"-->
+    <!--        app:lottie_loop="true"-->
+    <!--        app:lottie_rawRes="@raw/snow"-->
+    <!--        />-->
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="582dp"
+        android:background="@drawable/background">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsingToolbarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraint"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_collapseMode="parallax">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/snow"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:scaleType="fitXY"
+                    app:layout_constraintBottom_toBottomOf="@id/house"
+                    app:layout_constraintTop_toTopOf="@+id/detailsLinear"
+                    app:lottie_autoPlay="true"
+                    app:lottie_loop="true"
+                    app:lottie_rawRes="@raw/snoww" />
+
+
+                <LinearLayout
+                    android:id="@+id/detailsLinear"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_marginTop="20dp"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toTopOf="@id/house"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <TextView
+                        android:id="@+id/countryText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/regular"
+                        android:gravity="center_horizontal"
+                        android:text="@string/cairo"
+                        android:textSize="60sp" />
+
+                    <TextView
+                        android:id="@+id/dateText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/regular"
+                        android:gravity="center_horizontal"
+                        android:text="@string/fri_26_feb"
+                        android:textSize="18sp" />
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:weightSum="4">
+
+                        <TextView
+                            android:id="@+id/degreeText"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="2"
+                            android:gravity="center"
+                            android:paddingStart="90dp"
+                            android:text="@string/_20_c"
+                            android:textSize="40sp" />
+
+                        <ImageView
+                            android:id="@+id/weatherIcon"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="left"
+                            android:layout_weight="1.5"
+                            android:src="@drawable/snow" />
+
+                        <ImageView
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_gravity="left"
+                            android:layout_weight="0.5" />
+
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/weatherDescriptionText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/regular"
+                        android:text="@string/snow_and_rainy"
+                        android:textAlignment="center"
+                        android:textColor="#AEFFFFFF"
+                        android:textSize="25sp" />
+
+
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/house"
+                    android:layout_width="0dp"
+                    android:layout_height="378dp"
+                    android:layout_marginTop="220dp"
+                    android:src="@drawable/house"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/detailsLinear"
+                    app:layout_constraintVertical_bias="0.0" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <!-- AppBar content when collapsed -->
+            <!--            <androidx.appcompat.widget.Toolbar-->
+            <!--                android:id="@+id/toolbar"-->
+            <!--                android:layout_width="match_parent"-->
+            <!--                android:layout_height="?attr/actionBarSize"-->
+
+            <!--                android:textAlignment="center"-->
+            <!--                app:layout_collapseMode="pin"-->
+            <!--                app:title="Country Name"-->
+            <!--                app:titleTextColor="@color/white" />-->
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/gradient_shape_color"
+            app:cardCornerRadius="20dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/gradient_shape_color"
+                android:orientation="vertical">
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/gradient_shape_color"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <TextView
+                        android:id="@+id/hourlyForecast"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/regular"
+                        android:paddingTop="8dp"
+                        android:text="@string/hourly_forecast"
+                        android:textAlignment="center"
+                        android:textSize="25sp" />
+
+                    <TextView
+                        android:id="@+id/weeklyForecast"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/regular"
+                        android:paddingTop="8dp"
+                        android:text="@string/weekly_forecast"
+                        android:textAlignment="center"
+                        android:textSize="25sp" />
+                </LinearLayout>
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_margin="5dp"
+                    app:dividerColor="@color/white" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycleViewForecast"
+                    android:layout_width="match_parent"
+                    android:layout_height="160dp" />
+
+                <com.google.android.material.divider.MaterialDivider
+                    android:layout_width="match_parent"
+                    android:layout_height="2dp"
+                    android:layout_margin="5dp"
+                    app:dividerColor="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:weightSum="2">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="200dp"
+                        android:layout_margin="7dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/gradient_cardview"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="8dp"
+                            android:weightSum="3">
+
+                            <ImageView
+                                android:id="@+id/pressureIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:src="@drawable/snow" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/pressure"
+                                android:textAlignment="center"
+                                android:textColor="#BEFFFFFF"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/pressureDis"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/_1021_hpa"
+                                android:textAlignment="center"
+                                android:textSize="22sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="200dp"
+                        android:layout_margin="7dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/gradient_shape_color"
+                        app:cardCornerRadius="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/gradient_cardview"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="8dp"
+                            android:weightSum="3">
+
+                            <ImageView
+                                android:id="@+id/humidityIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:src="@drawable/snow" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/humidity"
+                                android:textAlignment="center"
+                                android:textColor="#BEFFFFFF"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/humidityDis"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/_77"
+                                android:textAlignment="center"
+                                android:textSize="22sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:weightSum="2">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="200dp"
+                        android:layout_margin="7dp"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/gradient_cardview"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="8dp"
+                            android:weightSum="3">
+
+                            <ImageView
+                                android:id="@+id/windIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:src="@drawable/snow" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/wind"
+                                android:textAlignment="center"
+                                android:textColor="#BEFFFFFF"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/windDis"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/_1021_hpa"
+                                android:textAlignment="center"
+                                android:textSize="22sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="200dp"
+                        android:layout_margin="7dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/gradient_shape_color"
+                        app:cardCornerRadius="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/gradient_cardview"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="8dp"
+                            android:weightSum="3">
+
+                            <ImageView
+                                android:id="@+id/cloudIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:src="@drawable/snow" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/cloud"
+                                android:textAlignment="center"
+                                android:textColor="#BEFFFFFF"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/cloudDis"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/_77"
+                                android:textAlignment="center"
+                                android:textSize="22sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:weightSum="2">
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="200dp"
+                        android:layout_margin="7dp"
+                        android:layout_weight="1"
+
+                        app:cardCornerRadius="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/gradient_cardview"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="8dp"
+                            android:weightSum="3">
+
+                            <ImageView
+                                android:id="@+id/ultraVioletIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:src="@drawable/snow" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/ultra_violet"
+                                android:textAlignment="center"
+                                android:textColor="#BEFFFFFF"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/ultraVioletDis"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/_1021_hpa"
+                                android:textAlignment="center"
+                                android:textSize="22sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="0dp"
+                        android:layout_height="200dp"
+                        android:layout_margin="7dp"
+                        android:layout_weight="1"
+                        android:background="@drawable/gradient_shape_color"
+                        app:cardCornerRadius="10dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="@drawable/gradient_cardview"
+                            android:orientation="vertical"
+                            android:paddingTop="16dp"
+                            android:paddingBottom="8dp"
+                            android:weightSum="3">
+
+                            <ImageView
+                                android:id="@+id/visibilityIcon"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:src="@drawable/snow" />
+
+                            <TextView
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="@string/visibility"
+                                android:textAlignment="center"
+                                android:textColor="#BEFFFFFF"
+                                android:textSize="26sp" />
+
+                            <TextView
+                                android:id="@+id/visibilityDis"
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"
+                                android:fontFamily="@font/regular"
+                                android:text="77 %"
+                                android:textAlignment="center"
+                                android:textSize="22sp" />
+
+                        </LinearLayout>
+                    </androidx.cardview.widget.CardView>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
