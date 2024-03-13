@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="80dp"
+    android:layout_height="146dp"
+    android:layout_margin="5dp"
+    android:background="@drawable/gradient_card_little"
+    >
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:cardCornerRadius="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@drawable/gradient_shape_color">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:weightSum="3"
+            android:background="@drawable/gradient_shape_color">
+
+            <TextView
+                android:id="@+id/hour_day_Text"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:paddingTop="25dp"
+                android:paddingStart="25dp"
+                android:paddingEnd="15dp"
+                android:layout_gravity="center|bottom"
+                android:layout_weight="1"
+                android:textSize="12sp" />
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:scaleType="fitCenter" />
+
+            <TextView
+                android:id="@+id/hour_day_degreeText"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:paddingStart="25dp"
+                android:layout_weight="1"
+                android:fontFamily="@font/regular" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>

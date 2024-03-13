@@ -11,8 +11,8 @@
     <string name="weekly_forecast">Weekly Forecast</string>
     <string name="pressure">Pressure</string>
     <string name="humidity">Humidity</string>
-    <string name="_20_c">20 C</string>
-    <string name="fri_26_feb">Fri , 26 Feb</string>
+    <string name="_20_c">20 °C</string>
+    <string name="fri_26_feb">Fri,26 Feb</string>
     <string name="cairo">Cairo</string>
     <string name="snow_and_rainy">Snow and Rainy</string>
     <string name="_1021_hpa">1021 hpa</string>

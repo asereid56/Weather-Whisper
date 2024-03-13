@@ -23,23 +23,23 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationBar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_gravity="bottom"
         android:background="@drawable/gradient_nav_view"
-        app:itemIconTint="@color/white"
+        app:itemIconTint="@color/black"
         app:itemTextColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/buttom_nav_bar">
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="64dp"
-            android:layout_gravity="center"
-            android:layout_marginTop="14dp"
-            android:foregroundGravity="center"
-            android:scaleType="center"
-            android:src="@drawable/location" />
+<!--        <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--            android:id="@+id/fab"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="64dp"-->
+<!--            android:layout_gravity="center"-->
+<!--            android:layout_marginTop="14dp"-->
+<!--            android:foregroundGravity="center"-->
+<!--            android:scaleType="center"-->
+<!--            android:src="@drawable/location" />-->
     </com.google.android.material.bottomnavigation.BottomNavigationView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

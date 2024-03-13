@@ -7,12 +7,12 @@
 
     <fragment
         android:id="@+id/homeFragment"
-        android:name="com.aser.weatherwhisper.HomeFragment"
+        android:name="com.aser.weatherwhisper.homefragment.view.HomeFragment"
         android:label="fragment_home"
         tools:layout="@layout/fragment_home" />
     <fragment
         android:id="@+id/settingFragment"
-        android:name="com.aser.weatherwhisper.SettingFragment"
+        android:name="com.aser.weatherwhisper.setting.view.SettingFragment"
         android:label="fragment_setting"
         tools:layout="@layout/fragment_setting" />
     <fragment
