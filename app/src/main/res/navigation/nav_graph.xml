@@ -14,7 +14,11 @@
         android:id="@+id/settingFragment"
         android:name="com.aser.weatherwhisper.setting.view.SettingFragment"
         android:label="fragment_setting"
-        tools:layout="@layout/fragment_setting" />
+        tools:layout="@layout/fragment_setting" >
+        <action
+            android:id="@+id/action_settingFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
+    </fragment>
     <fragment
         android:id="@+id/alertFragment"
         android:name="com.aser.weatherwhisper.AlertFragment"
@@ -25,4 +29,9 @@
         android:name="com.aser.weatherwhisper.FavouriteFragment"
         android:label="fragment_favourite"
         tools:layout="@layout/fragment_favourite" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="com.aser.weatherwhisper.MapFragment"
+        android:label="fragment_map"
+        tools:layout="@layout/fragment_map" />
 </navigation>

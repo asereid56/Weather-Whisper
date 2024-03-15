@@ -1,20 +1,14 @@
 package com.aser.weatherwhisper.homefragment.viewmodel
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.aser.weatherwhisper.Constants
+import com.aser.weatherwhisper.utils.Constants
 import com.aser.weatherwhisper.model.WeatherRepository
-import com.aser.weatherwhisper.model.WeatherResponse
 import com.aser.weatherwhisper.utils.ApiState
-import com.google.android.gms.common.api.internal.ApiKey
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class WeatherDetailsViewModel(private val repo: WeatherRepository) : ViewModel() {
@@ -29,10 +23,7 @@ class WeatherDetailsViewModel(private val repo: WeatherRepository) : ViewModel()
 //        }
 //    }
 
-    fun getWeatherDetails(
-        latitude: Double, longitude: Double, language: String = Constants.LANG_ENGLISH,
-        units: String = Constants.UNITS_CELSIUS
-    ) {
+    fun getWeatherDetails(latitude: Double, longitude: Double, language: String, units: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getWeatherDetails(latitude, longitude, language, units).catch { e ->
                 run {

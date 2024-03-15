@@ -1,3 +1,4 @@
+// HourlyAdapter.kt
 package com.aser.weatherwhisper.homefragment.view
 
 import android.content.Context
@@ -7,15 +8,16 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aser.weatherwhisper.databinding.HourDayItemBinding
-import com.aser.weatherwhisper.model.Daily
 import com.aser.weatherwhisper.model.Hourly
+import com.aser.weatherwhisper.utils.Constants
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class HourlyAdapter : ListAdapter<Hourly, HourlyAdapter.MyViewHolder>(HourlyDiffUtil()) {
-    lateinit var binding: HourDayItemBinding
+class HourlyAdapter(private val unit: String) : ListAdapter<Hourly, HourlyAdapter.MyViewHolder>(HourlyDiffUtil()) {
+    private lateinit var binding: HourDayItemBinding
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater: LayoutInflater =
             parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
@@ -36,9 +38,15 @@ class HourlyAdapter : ListAdapter<Hourly, HourlyAdapter.MyViewHolder>(HourlyDiff
         val formattedTime = dateFormat.format(date)
         holder.binding.hourDayText.text = formattedTime
 
-        binding.hourDayDegreeText.text = String.format("%.0f °C", currentItem.temp)
+        holder.binding.hourDayDegreeText.text = formatTemperature(currentItem.temp.toFloat(), unit)
+    }
 
-
+    private fun formatTemperature(temp: Float, unit: String): String {
+        return when (unit) {
+            Constants.UNITS_CELSIUS -> String.format("%.0f °C", temp)
+            Constants.UNITS_KELVIN -> String.format("%.0f K", temp)
+            else -> String.format("%.0f °F", temp)
+        }
     }
 
     class MyViewHolder(var binding: HourDayItemBinding) : RecyclerView.ViewHolder(binding.root)
@@ -52,5 +60,4 @@ class HourlyDiffUtil : DiffUtil.ItemCallback<Hourly>() {
     override fun areContentsTheSame(oldItem: Hourly, newItem: Hourly): Boolean {
         return oldItem == newItem
     }
-
 }

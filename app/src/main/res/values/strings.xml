@@ -4,21 +4,25 @@
     <string name="alerts">Alerts</string>
     <string name="location">Location</string>
     <string name="favourite">Favourite</string>
-    <string name="setting">Setting</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="setting">Settings</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hourly_forecast">Hourly Forecast</string>
     <string name="weekly_forecast">Weekly Forecast</string>
     <string name="pressure">Pressure</string>
     <string name="humidity">Humidity</string>
-    <string name="_20_c">20 °C</string>
-    <string name="fri_26_feb">Fri,26 Feb</string>
-    <string name="cairo">Cairo</string>
-    <string name="snow_and_rainy">Snow and Rainy</string>
-    <string name="_1021_hpa">1021 hpa</string>
-    <string name="_77">77 %</string>
     <string name="wind">Wind</string>
     <string name="cloud">Cloud</string>
-    <string name="ultra_violet">Ultra Violet</string>
     <string name="visibility">Visibility</string>
+    <string name="language">Language</string>
+    <string name="arabic">Arabic</string>
+    <string name="english">English</string>
+    <string name="celsuis">Celsuis</string>
+    <string name="fahrenheit">Fahrenheit</string>
+    <string name="temperature">Temperature</string>
+    <string name="wind_speed">Wind Speed</string>
+    <string name="meter_sec">Meter / Sec</string>
+    <string name="mile_hour">Mile / Hour</string>
+    <string name="kelvin">Kelvin</string>
+    <string name="map">Map</string>
+
 </resources>

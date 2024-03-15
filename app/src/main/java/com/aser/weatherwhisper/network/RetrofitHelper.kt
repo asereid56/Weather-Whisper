@@ -1,6 +1,6 @@
 package com.aser.weatherwhisper.network
 
-import com.aser.weatherwhisper.Constants
+import com.aser.weatherwhisper.utils.Constants
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 

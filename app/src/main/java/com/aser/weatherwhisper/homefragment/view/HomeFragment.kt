@@ -3,6 +3,7 @@ package com.aser.weatherwhisper.homefragment.view
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
@@ -18,7 +19,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.aser.weatherwhisper.Constants
+import com.aser.weatherwhisper.R
+import com.aser.weatherwhisper.utils.Constants
 import com.aser.weatherwhisper.databinding.FragmentHomeBinding
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
@@ -26,6 +28,16 @@ import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModel
 import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModelFactory
 import com.aser.weatherwhisper.model.WeatherResponse
 import com.aser.weatherwhisper.utils.ApiState
+import com.aser.weatherwhisper.utils.Constants.Companion.LANG
+import com.aser.weatherwhisper.utils.Constants.Companion.LANG_ENGLISH
+import com.aser.weatherwhisper.utils.Constants.Companion.MEASUREMENT_UNIT
+import com.aser.weatherwhisper.utils.Constants.Companion.METER
+import com.aser.weatherwhisper.utils.Constants.Companion.MILE
+import com.aser.weatherwhisper.utils.Constants.Companion.REQUEST_LOCATION_CODE
+import com.aser.weatherwhisper.utils.Constants.Companion.SPEED_UNIT
+import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_CELSIUS
+import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_FAHRENHEIT
+import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_KELVIN
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -46,6 +58,9 @@ class HomeFragment : Fragment() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var dailyAdapter: DailyAdapter
     private lateinit var hourlyAdapter: HourlyAdapter
+    private var unit: String = Constants.UNITS_CELSIUS
+    private var language: String = Constants.LANG_ENGLISH
+    private var speed: String = Constants.METER
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,8 +77,18 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        dailyAdapter = DailyAdapter()
-        hourlyAdapter = HourlyAdapter()
+        val sharedPreferences =
+            requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+
+        unit = sharedPreferences.getString(MEASUREMENT_UNIT, UNITS_CELSIUS)!!
+
+        language = sharedPreferences.getString(LANG, LANG_ENGLISH)!!
+
+        speed = sharedPreferences.getString(SPEED_UNIT, METER)!!
+
+        dailyAdapter = DailyAdapter(unit)
+        hourlyAdapter = HourlyAdapter(unit)
+
 
         if (checkPermission()) {
             if (isLocationEnable()) {
@@ -78,7 +103,7 @@ class HomeFragment : Fragment() {
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
-                Constants.REQUEST_LOCATION_CODE
+                REQUEST_LOCATION_CODE
             )
         }
 
@@ -130,8 +155,10 @@ class HomeFragment : Fragment() {
         val formattedDate = dateFormat.format(Date(weatherResponse.current.dt * 1000L))
         binding.dateText.text = formattedDate
 
-        binding.degreeText.text = String.format("%.0f °C", weatherResponse.current.temp.toFloat())
-        // binding.degreeText.text = weatherResponse.current.temp.toString()
+        binding.degreeText.text = formatTemperature(
+            weatherResponse.current.temp.toFloat(),
+            unit
+        )
 
         val iconCode = weatherResponse.current.weather.firstOrNull()?.icon ?: ""
         val iconUrl = "https://openweathermap.org/img/wn/$iconCode.png"
@@ -144,7 +171,7 @@ class HomeFragment : Fragment() {
         binding.humidityDis.text =
             String.format("%.0f %%", weatherResponse.current.humidity.toFloat())
         binding.windDis.text =
-            String.format("%.0f m/s", weatherResponse.current.wind_speed.toFloat())
+            formatSpeed(speed, unit, weatherResponse.current.wind_speed.toFloat())
         binding.cloudDis.text =
             String.format("%.0f %%", weatherResponse.current.clouds.toFloat())
         binding.visibilityDis.text =
@@ -152,7 +179,6 @@ class HomeFragment : Fragment() {
 
         dailyAdapter.submitList(weatherResponse.daily)
         hourlyAdapter.submitList(weatherResponse.hourly)
-
         showHourlyForecast()
     }
 
@@ -161,6 +187,8 @@ class HomeFragment : Fragment() {
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = hourlyAdapter
+        binding.weeklyForecast.setTextColor(Color.GRAY)
+        binding.hourlyForecast.setTextColor(Color.WHITE)
     }
 
     private fun showWeeklyForecast() {
@@ -168,7 +196,41 @@ class HomeFragment : Fragment() {
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = dailyAdapter
+        binding.weeklyForecast.setTextColor(Color.WHITE)
+        binding.hourlyForecast.setTextColor(Color.GRAY)
     }
+
+    private fun formatTemperature(temp: Float, unit: String): String {
+        return when (unit) {
+            UNITS_CELSIUS -> String.format("%.0f °C", temp)
+            UNITS_KELVIN -> String.format("%.0f K", temp)
+            else -> String.format("%.0f °F", temp)
+        }
+    }
+
+    private fun formatSpeed(speedUnit: String, measurementUnit: String, speed: Float): String {
+
+        return when {
+            (measurementUnit == UNITS_KELVIN && speedUnit == METER) || (measurementUnit == UNITS_CELSIUS && speedUnit == METER) -> {
+                String.format("%.0f m/s", speed)
+            }
+
+            (measurementUnit == UNITS_KELVIN && speedUnit == MILE) || (measurementUnit == UNITS_CELSIUS && speedUnit == MILE) -> {
+                val speedInMilesPerHour = speed * 3600 / 1609.344
+                String.format("%.0f mile/h", speedInMilesPerHour)
+            }
+
+            (measurementUnit == UNITS_FAHRENHEIT && speedUnit == MILE) -> {
+                String.format("%.0f mile/h", speed)
+            }
+
+            else -> {
+                val speedInMeterPerSec = speed * 1609.344 / 3600
+                String.format("%.0f m/s", speedInMeterPerSec)
+            }
+        }
+    }
+
 
     private fun checkPermission(): Boolean {
         return ActivityCompat.checkSelfPermission(
@@ -203,6 +265,7 @@ class HomeFragment : Fragment() {
                     fusedLocationProviderClient.requestLocationUpdates(
                         //location request
                         LocationRequest.Builder(0).apply {
+
                             setIntervalMillis(30000)
                             setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 
@@ -221,6 +284,8 @@ class HomeFragment : Fragment() {
                                     viewModel.getWeatherDetails(
                                         location.latitude,
                                         location.longitude,
+                                        language = language,
+                                        units = unit
                                     )
                                 }
                             }
@@ -244,7 +309,7 @@ class HomeFragment : Fragment() {
                     android.Manifest.permission.ACCESS_FINE_LOCATION,
                     android.Manifest.permission.ACCESS_COARSE_LOCATION
                 ),
-                Constants.REQUEST_LOCATION_CODE
+                REQUEST_LOCATION_CODE
             )
         }
     }

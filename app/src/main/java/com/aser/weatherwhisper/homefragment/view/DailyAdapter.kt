@@ -8,12 +8,14 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.aser.weatherwhisper.databinding.HourDayItemBinding
 import com.aser.weatherwhisper.model.Daily
+import com.aser.weatherwhisper.utils.Constants
 import com.bumptech.glide.Glide
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class DailyAdapter : ListAdapter<Daily, DailyAdapter.MyViewHolder>(DailyDiffUtil()) {
+class DailyAdapter(private val unit: String) :
+    ListAdapter<Daily, DailyAdapter.MyViewHolder>(DailyDiffUtil()) {
     lateinit var binding: HourDayItemBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater: LayoutInflater =
@@ -35,12 +37,20 @@ class DailyAdapter : ListAdapter<Daily, DailyAdapter.MyViewHolder>(DailyDiffUtil
         val formattedDay = dayFormat.format(date)
         holder.binding.hourDayText.text = formattedDay
 
-        binding.hourDayDegreeText.text = String.format("%.0f °C", currentItem.temp.day)
+        binding.hourDayDegreeText.text = formatTemperature(currentItem.temp.day.toFloat() , unit)
 
 
     }
 
     class MyViewHolder(var binding: HourDayItemBinding) : RecyclerView.ViewHolder(binding.root)
+}
+
+private fun formatTemperature(temp: Float, unit: String): String {
+    return when (unit) {
+        Constants.UNITS_CELSIUS -> String.format("%.0f °C", temp)
+        Constants.UNITS_KELVIN -> String.format("%.0f K", temp)
+        else -> String.format("%.0f F" ,temp)
+    }
 }
 
 class DailyDiffUtil : DiffUtil.ItemCallback<Daily>() {

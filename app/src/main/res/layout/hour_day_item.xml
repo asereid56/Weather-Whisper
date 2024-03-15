@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@drawable/gradient_shape_color">
+        android:background="@color/betroly">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -47,9 +47,12 @@
                 android:id="@+id/hour_day_degreeText"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:paddingTop="10dp"
                 android:paddingStart="25dp"
+                android:paddingEnd="25dp"
+                android:layout_gravity="center|bottom"
                 android:layout_weight="1"
-                android:fontFamily="@font/regular" />
+                android:textSize="11sp" />
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

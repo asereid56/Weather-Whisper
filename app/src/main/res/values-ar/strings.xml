@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">همس الطقس</string>
+    <string name="home">الصفحة الرئيسية</string>
+    <string name="alerts">التنبيهات</string>
+    <string name="location">الموقع</string>
+    <string name="favourite">المفضلة</string>
+    <string name="setting">الإعدادات</string>
+    <string name="hello_blank_fragment">مرحبًا، قطعة فارغة</string>
+    <string name="hourly_forecast">التوقعات اليومية</string>
+    <string name="weekly_forecast">التوقعات الأسبوعية</string>
+    <string name="pressure">الضغط</string>
+    <string name="humidity">الرطوبة</string>
+    <string name="wind">الرياح</string>
+    <string name="cloud">السحب</string>
+    <string name="visibility">الرؤية</string>
+    <string name="language">اللغة</string>
+    <string name="arabic">العربية</string>
+    <string name="english">الإنجليزية</string>
+    <string name="celsuis">درجة مئوية</string>
+    <string name="fahrenheit">فهرنهايت</string>
+    <string name="temperature">درجة الحرارة</string>
+    <string name="wind_speed">سرعة الرياح</string>
+    <string name="meter_sec">متر / ثانية</string>
+    <string name="mile_hour">ميل / ساعة</string>
+    <string name="kelvin">كيلفن</string>
+
+</resources>

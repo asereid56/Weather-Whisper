@@ -1,6 +1,6 @@
 package com.aser.weatherwhisper.network
 
-import com.aser.weatherwhisper.Constants
+import com.aser.weatherwhisper.utils.Constants
 import com.aser.weatherwhisper.model.WeatherResponse
 import retrofit2.Response
 import retrofit2.http.GET

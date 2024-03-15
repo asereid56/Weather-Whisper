@@ -26,8 +26,7 @@
         android:layout_height="60dp"
         android:layout_gravity="bottom"
         android:background="@drawable/gradient_nav_view"
-        app:itemIconTint="@color/black"
-        app:itemTextColor="@color/white"
+        app:itemIconTint="@color/dark_grey"
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/buttom_nav_bar">
 

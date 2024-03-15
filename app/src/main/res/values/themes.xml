@@ -3,8 +3,7 @@
     <style name="Base.Theme.WeatherWhisper" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="android:textColor">#FFFFFF</item> <!-- For text color -->
         <item name="android:color">#FFFFFF</item>
-<!--        <item name="colorPrimary">#FFFFFF</item>-->
-<!--        <item name="colorPrimaryVariant">#FFFFFF</item>-->
+        <item name="colorPrimaryVariant">#FFFFFF</item>
     </style>
 
     <style name="Theme.WeatherWhisper" parent="Base.Theme.WeatherWhisper" />
