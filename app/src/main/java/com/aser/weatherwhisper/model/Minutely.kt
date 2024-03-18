@@ -1,6 +1,6 @@
 package com.aser.weatherwhisper.model
 
 data class Minutely(
-    val dt: Int,
-    val precipitation: Int
+    val dt: Long,
+    val precipitation: Double
 )

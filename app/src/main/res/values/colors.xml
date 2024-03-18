@@ -6,8 +6,9 @@
     <color name="dark_purple">#362A84</color>
     <color name="pink">#C427FB</color>
     <color name="grey">#E0D9FF</color>
-    <color name="dark_grey">#AEFFFFFF</color>
+    <color name="light_grey">#AEFFFFFF</color>
     <color name="betroly">#2D9596</color>
     <color name="a">#1B4242</color>
     <color name="zar2awy">#0766AD</color>
+    <color name="darkGray">#808080</color>
 </resources>

@@ -9,25 +9,27 @@ import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.widget.NestedScrollView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.aser.weatherwhisper.R
-import com.aser.weatherwhisper.utils.Constants
 import com.aser.weatherwhisper.databinding.FragmentHomeBinding
-import com.aser.weatherwhisper.model.WeatherRepository
-import com.aser.weatherwhisper.network.WeatherRemoteDataSource
+import com.aser.weatherwhisper.db.CitiesLocalDataBase
 import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModel
 import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModelFactory
+import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.model.WeatherResponse
-import com.aser.weatherwhisper.utils.ApiState
+import com.aser.weatherwhisper.network.WeatherRemoteDataSource
+import com.aser.weatherwhisper.utils.ApiWeatherState
 import com.aser.weatherwhisper.utils.Constants.Companion.LANG
 import com.aser.weatherwhisper.utils.Constants.Companion.LANG_ENGLISH
 import com.aser.weatherwhisper.utils.Constants.Companion.MEASUREMENT_UNIT
@@ -58,37 +60,47 @@ class HomeFragment : Fragment() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var dailyAdapter: DailyAdapter
     private lateinit var hourlyAdapter: HourlyAdapter
-    private var unit: String = Constants.UNITS_CELSIUS
-    private var language: String = Constants.LANG_ENGLISH
-    private var speed: String = Constants.METER
-
+    private var unit: String = UNITS_CELSIUS
+    private var language: String = LANG_ENGLISH
+    private var speed: String = METER
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private var cityNameFromArgs: String? = null
+    private var longFromArgs: Float? = null
+    private var latFromArgs: Float? = null
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         weatherDetailsFactory =
-            WeatherDetailsViewModelFactory(WeatherRepository.getInstance(WeatherRemoteDataSource.instance))
+            WeatherDetailsViewModelFactory(
+                WeatherRepository.getInstance(
+                    WeatherRemoteDataSource.instance,
+                    CitiesLocalDataBase(requireContext())
+                )
+            )
         viewModel =
             ViewModelProvider(this, weatherDetailsFactory)[WeatherDetailsViewModel::class.java]
+
+        swipeRefreshLayout = binding.root.findViewById(R.id.swipeRefreshLayout)
+        binding.swipeRefreshLayout.isEnabled = false
+        binding.nestedScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
+            binding.swipeRefreshLayout.isEnabled = scrollY == 0
+        })
+        swipeRefreshLayout.setOnRefreshListener {
+            refreshWeatherData()
+        }
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val sharedPreferences =
-            requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
-
-        unit = sharedPreferences.getString(MEASUREMENT_UNIT, UNITS_CELSIUS)!!
-
-        language = sharedPreferences.getString(LANG, LANG_ENGLISH)!!
-
-        speed = sharedPreferences.getString(SPEED_UNIT, METER)!!
+        getDetailsOfTheUnitsAndLanguageFromSetting()
+        getArgsDetails()
 
         dailyAdapter = DailyAdapter(unit)
         hourlyAdapter = HourlyAdapter(unit)
-
 
         if (checkPermission()) {
             if (isLocationEnable()) {
@@ -108,42 +120,20 @@ class HomeFragment : Fragment() {
         }
 
         binding.hourlyForecast.setOnClickListener {
-            showHourlyForecast()
+            showHourlyForecastRecycleView()
         }
         binding.weeklyForecast.setOnClickListener {
-            showWeeklyForecast()
+            showWeeklyForecastRecycleView()
         }
 
-        lifecycleScope.launch(Dispatchers.Main) {
-            viewModel.weatherResponse.collectLatest { result ->
-                when (result) {
-                    is ApiState.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.progressBar2.visibility = View.VISIBLE
-                        binding.recycleViewForecast.visibility = View.INVISIBLE
-                        binding.detailsLinear.visibility = View.INVISIBLE
-                    }
+        // refreshWeatherResponseObserver()
+    }
 
-                    is ApiState.Success -> {
-                        binding.progressBar.visibility = View.GONE
-                        binding.progressBar2.visibility = View.GONE
-                        binding.recycleViewForecast.visibility = View.VISIBLE
-                        binding.detailsLinear.visibility = View.VISIBLE
-                        updateUI(result.data)
-                    }
 
-                    else -> {
-                        binding.recycleViewForecast.visibility = View.INVISIBLE
-                        binding.detailsLinear.visibility = View.INVISIBLE
-                        Toast.makeText(
-                            requireContext(),
-                            "There is a problem with the server",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }
-        }
+    private fun refreshWeatherData() {
+        getFreshLocation()
+        refreshWeatherResponseObserver()
+        swipeRefreshLayout.isRefreshing = false
     }
 
     private fun updateUI(weatherResponse: WeatherResponse) {
@@ -179,10 +169,10 @@ class HomeFragment : Fragment() {
 
         dailyAdapter.submitList(weatherResponse.daily)
         hourlyAdapter.submitList(weatherResponse.hourly)
-        showHourlyForecast()
+        showHourlyForecastRecycleView()
     }
 
-    private fun showHourlyForecast() {
+    private fun showHourlyForecastRecycleView() {
         val recyclerView: RecyclerView = binding.recycleViewForecast
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -191,7 +181,7 @@ class HomeFragment : Fragment() {
         binding.hourlyForecast.setTextColor(Color.WHITE)
     }
 
-    private fun showWeeklyForecast() {
+    private fun showWeeklyForecastRecycleView() {
         val recyclerView: RecyclerView = binding.recycleViewForecast
         recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -277,16 +267,32 @@ class HomeFragment : Fragment() {
                                 super.onLocationResult(locationResult)
                                 val location = locationResult.lastLocation
                                 if (location != null) {
-                                    Log.i(
-                                        "TAG",
-                                        "onLocationResult: ${location.latitude} , ${location.longitude}"
-                                    )
-                                    viewModel.getWeatherDetails(
-                                        location.latitude,
-                                        location.longitude,
-                                        language = language,
-                                        units = unit
-                                    )
+
+                                    if (cityNameFromArgs == "defaultValue") {
+                                        viewModel.getWeatherDetails(
+                                            location.latitude,
+                                            location.longitude,
+                                            language = language,
+                                            units = unit
+                                        )
+                                        Log.i(
+                                            "TAG",
+                                            "onLocationResult: in if statement  ${location.latitude} , ${location.longitude}"
+                                        )
+                                    } else {
+                                        viewModel.getWeatherDetails(
+                                            latitude = latFromArgs!!.toDouble(),
+                                            longitude = longFromArgs!!.toDouble(),
+                                            language = language,
+                                            units = unit
+                                        )
+                                        Log.i(
+                                            "TAG",
+                                            "in else statement :  $longFromArgs $latFromArgs "
+                                        )
+                                    }
+                                    refreshWeatherResponseObserver()
+                                    fusedLocationProviderClient.removeLocationUpdates(this)
                                 }
                             }
                         },
@@ -313,4 +319,64 @@ class HomeFragment : Fragment() {
             )
         }
     }
+
+    private fun refreshWeatherResponseObserver() {
+        Log.i("TAG", "refreshWeatherResponseObserver: out ")
+        lifecycleScope.launch(Dispatchers.Main) {
+            Log.i("TAG", "refreshWeatherResponseObserver: in ")
+            viewModel.weatherResponse.collect { result ->
+                when (result) {
+                    is ApiWeatherState.Loading -> {
+                        Log.i("TAG", "refreshWeatherResponseObserver: in load")
+                        binding.progressBar.visibility = View.VISIBLE
+                        binding.progressBar2.visibility = View.VISIBLE
+                        binding.recycleViewForecast.visibility = View.INVISIBLE
+                        binding.detailsLinear.visibility = View.INVISIBLE
+                    }
+
+                    is ApiWeatherState.Success -> {
+                        Log.i("TAG", "refreshWeatherResponseObserver: in succ")
+                        binding.progressBar.visibility = View.GONE
+                        binding.progressBar2.visibility = View.GONE
+                        binding.recycleViewForecast.visibility = View.VISIBLE
+                        binding.detailsLinear.visibility = View.VISIBLE
+                        updateUI(result.data)
+                    }
+
+                    else -> {
+                        Log.i("TAG", "refreshWeatherResponseObserver: in fail")
+                        binding.recycleViewForecast.visibility = View.INVISIBLE
+                        binding.detailsLinear.visibility = View.INVISIBLE
+                        Toast.makeText(
+                            requireContext(),
+                            "There is a problem with the server",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getArgsDetails() {
+        arguments?.let { args ->
+            val cityName = args.getString("cityName")
+            val longitude = args.getFloat("longitude")
+            val latitude = args.getFloat("latitude")
+            cityNameFromArgs = cityName
+            longFromArgs = longitude
+            latFromArgs = latitude
+        }
+    }
+
+    private fun getDetailsOfTheUnitsAndLanguageFromSetting() {
+        val sharedPreferences =
+            requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+
+        unit = sharedPreferences.getString(MEASUREMENT_UNIT, UNITS_CELSIUS)!!
+        language = sharedPreferences.getString(LANG, LANG_ENGLISH)!!
+        speed = sharedPreferences.getString(SPEED_UNIT, METER)!!
+
+    }
+
 }

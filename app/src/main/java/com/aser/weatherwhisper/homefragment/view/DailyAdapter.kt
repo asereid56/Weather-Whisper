@@ -16,7 +16,7 @@ import java.util.Locale
 
 class DailyAdapter(private val unit: String) :
     ListAdapter<Daily, DailyAdapter.MyViewHolder>(DailyDiffUtil()) {
-    lateinit var binding: HourDayItemBinding
+    private lateinit var binding: HourDayItemBinding
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val inflater: LayoutInflater =
             parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

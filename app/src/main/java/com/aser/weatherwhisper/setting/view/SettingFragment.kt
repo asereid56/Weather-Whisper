@@ -5,10 +5,12 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.Configuration
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.NavHostFragment
+import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.databinding.FragmentSettingBinding
 import com.aser.weatherwhisper.utils.Constants
 import com.aser.weatherwhisper.utils.Constants.Companion.MEASUREMENT_UNIT
@@ -61,6 +63,10 @@ class SettingFragment : Fragment() {
 
         binding.btnMile.setOnClickListener {
             unitsSharedPref.edit().putString(SPEED_UNIT, Constants.MILE).apply()
+        }
+        binding.btnMap.setOnClickListener {
+            val navController = NavHostFragment.findNavController(this@SettingFragment)
+            navController.navigate(R.id.action_settingFragment_to_mapFragment)
         }
 
     }

@@ -24,5 +24,8 @@
     <string name="mile_hour">Mile / Hour</string>
     <string name="kelvin">Kelvin</string>
     <string name="map">Map</string>
+    <string name="search_for_a_city">Search for a city</string>
+    <string name="current_location">Current location</string>
+    <string name="delete">Delete</string>
 
 </resources>

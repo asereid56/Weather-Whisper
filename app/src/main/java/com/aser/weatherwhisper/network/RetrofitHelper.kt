@@ -14,3 +14,14 @@ object RetrofitHelper {
         retrofitInstance.create(WeatherService::class.java)
     }
 }
+
+object RetrofitHelperCity {
+    private val retrofitInstance = Retrofit.Builder()
+        .baseUrl(Constants.WEATHER_COUNTRY_BASE_URL)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+
+    val service: WeatherService by lazy {
+        retrofitInstance.create(WeatherService::class.java)
+    }
+}

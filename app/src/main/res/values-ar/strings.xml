@@ -23,5 +23,8 @@
     <string name="meter_sec">متر / ثانية</string>
     <string name="mile_hour">ميل / ساعة</string>
     <string name="kelvin">كيلفن</string>
+    <string name="map">الخريطة</string>
+    <string name="search_for_a_city">ابحث عن مدينة</string>
+    <string name="current_location">الموقع الحالي</string>
 
 </resources>

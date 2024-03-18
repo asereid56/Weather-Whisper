@@ -9,7 +9,18 @@
         android:id="@+id/homeFragment"
         android:name="com.aser.weatherwhisper.homefragment.view.HomeFragment"
         android:label="fragment_home"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <argument
+            android:name="cityName"
+            app:argType="string"
+            android:defaultValue="defaultValue" />
+        <argument
+            android:name="longitude"
+            app:argType="float" />
+        <argument
+            android:name="latitude"
+            app:argType="float" />
+    </fragment>
     <fragment
         android:id="@+id/settingFragment"
         android:name="com.aser.weatherwhisper.setting.view.SettingFragment"
@@ -18,6 +29,9 @@
         <action
             android:id="@+id/action_settingFragment_to_mapFragment"
             app:destination="@id/mapFragment" />
+        <argument
+            android:name="city"
+            app:argType="string" />
     </fragment>
     <fragment
         android:id="@+id/alertFragment"
@@ -26,12 +40,19 @@
         tools:layout="@layout/fragment_alert" />
     <fragment
         android:id="@+id/favouriteFragment"
-        android:name="com.aser.weatherwhisper.FavouriteFragment"
+        android:name="com.aser.weatherwhisper.favouritefragment.view.FavouriteFragment"
         android:label="fragment_favourite"
         tools:layout="@layout/fragment_favourite" />
     <fragment
         android:id="@+id/mapFragment"
-        android:name="com.aser.weatherwhisper.MapFragment"
+        android:name="com.aser.weatherwhisper.mapFragment.view.MapFragment"
         android:label="fragment_map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map" >
+        <action
+            android:id="@+id/action_mapFragment_to_settingFragment"
+            app:destination="@id/settingFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
 </navigation>

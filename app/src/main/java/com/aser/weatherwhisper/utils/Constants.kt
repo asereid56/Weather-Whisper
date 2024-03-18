@@ -3,6 +3,7 @@ package com.aser.weatherwhisper.utils
 class Constants {
     companion object{
         const val WEATHER_BASE_URL = "https://api.openweathermap.org/data/3.0/"
+        const val WEATHER_COUNTRY_BASE_URL = "https://api.openweathermap.org/data/2.5/"
         const val API_KEY = "620cbd7a0e1ed2dcb44a5d5c7d382a25"
         const val REQUEST_LOCATION_CODE = 1001
         const val LANG = "LANG"
@@ -12,8 +13,6 @@ class Constants {
         const val UNITS_KELVIN = "standard"
         const val UNITS_CELSIUS = "metric"
         const val UNITS_FAHRENHEIT = "imperial"
-        const val BTN_AR_CLICKABLE = "btn_ar_clickable"
-        const val BTN_EN_CLICKABLE = "btn_en_clickable"
         const val METER = "meter"
         const val SPEED_UNIT = "speed"
         const val MILE = "mile"
