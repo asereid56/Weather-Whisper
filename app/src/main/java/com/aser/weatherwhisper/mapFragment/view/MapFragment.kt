@@ -1,5 +1,7 @@
 package com.aser.weatherwhisper.mapFragment.view
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.text.Editable
@@ -9,16 +11,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.ui.NavigationUI
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.aser.weatherwhisper.R
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
+import androidx.work.workDataOf
 import com.aser.weatherwhisper.databinding.FragmentMapBinding
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
 import com.aser.weatherwhisper.mapFragment.viewmodel.MapViewModel
@@ -31,11 +32,14 @@ import com.aser.weatherwhisper.utils.ApiSearchState
 import com.aser.weatherwhisper.utils.Constants
 import com.aser.weatherwhisper.utils.Constants.Companion.LANG_ENGLISH
 import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_CELSIUS
-import com.google.android.gms.maps.MapFragment
+import com.aser.weatherwhisper.worker.AlertWorker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
     lateinit var binding: FragmentMapBinding
@@ -44,6 +48,8 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
     private lateinit var countryAdapter: CityAdapter
     private var unit: String = UNITS_CELSIUS
     private var language: String = LANG_ENGLISH
+    private var selectedDate: String = ""
+    private var selectedTime: String = ""
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -163,12 +169,82 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
     }
 
 
-    override fun onCountryAlertListener(weatherResponseCountry: WeatherResponseCountry) {
-        TODO("Not yet implemented")
+    override fun onCountryAlertListener(city: City) {
+        showDateDialog(city)
+        viewModel.addToAlert(city)
+
     }
+
 
     override fun onCountryFavListener(city: City) {
         viewModel.addToFav(city)
+    }
+
+    private fun showDateDialog(city: City) {
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
+                // Corrected date format: yyyy-MM-dd
+                selectedDate =
+                    String.format(Locale.getDefault(), "%d-%02d-%02d", year, month + 1, dayOfMonth)
+                // After selecting the date, show the time picker dialog
+                showTimeDialog(city)
+            },
+            Calendar.getInstance().get(Calendar.YEAR),
+            Calendar.getInstance().get(Calendar.MONTH),
+            Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
+    }
+
+
+    private fun showTimeDialog(city: City) {
+        val timePickerDialog = TimePickerDialog(
+            requireContext(),
+            TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+                // Format the selected time
+                selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute)
+                // Construct the final date-time string
+                val dateTime = "$selectedDate $selectedTime"
+
+                // Convert the date-time string to milliseconds
+                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                val selectedMillis = sdf.parse(dateTime)?.time ?: return@OnTimeSetListener
+
+                try {
+                    val latitude = city.latitude
+                    val longitude = city.longitude
+
+                    // Pass the date-time and other parameters to the WorkManager
+                    val inputData = workDataOf(
+                        AlertWorker.KEY_LONGITUDE to longitude,
+                        AlertWorker.KEY_LATITUDE to latitude,
+                        AlertWorker.KEY_LANG to language,
+                        AlertWorker.KEY_UNIT to unit,
+                    )
+
+                    val alertWorkRequest = OneTimeWorkRequestBuilder<AlertWorker>()
+                        .setInputData(inputData)
+                        .setInitialDelay(
+                            selectedMillis - System.currentTimeMillis(),
+                            java.util.concurrent.TimeUnit.MILLISECONDS
+                        )
+                        .build()
+
+                    // Enqueue the WorkManager task
+                    WorkManager.getInstance(requireContext()).enqueue(alertWorkRequest)
+
+                    Log.d("MapFragment", "Alert work request enqueued successfully")
+                } catch (e: ParseException) {
+                    e.printStackTrace()
+                    Log.e("MapFragment", "Error parsing date: ${e.message}", e)
+                }
+            },
+            0,
+            0,
+            false
+        )
+        timePickerDialog.show()
     }
 
 }

@@ -46,7 +46,8 @@ class CityAdapter(
             onFavClickListener.onCountryFavListener(city)
         }
         binding.btnAlert.setOnClickListener {
-            onAlertClickListener.onCountryAlertListener(currentItem)
+            var city = City(currentItem.name , currentItem.coord.lon , currentItem.coord.lat , "Alert")
+            onAlertClickListener.onCountryAlertListener(city)
         }
         holder.itemView.setOnClickListener {
             val position = holder.adapterPosition

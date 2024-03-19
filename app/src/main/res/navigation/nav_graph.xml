@@ -20,6 +20,9 @@
         <argument
             android:name="latitude"
             app:argType="float" />
+        <action
+            android:id="@+id/action_homeFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingFragment"
@@ -35,14 +38,18 @@
     </fragment>
     <fragment
         android:id="@+id/alertFragment"
-        android:name="com.aser.weatherwhisper.AlertFragment"
+        android:name="com.aser.weatherwhisper.alertfragment.view.AlertFragment"
         android:label="fragment_alert"
         tools:layout="@layout/fragment_alert" />
     <fragment
         android:id="@+id/favouriteFragment"
         android:name="com.aser.weatherwhisper.favouritefragment.view.FavouriteFragment"
         android:label="fragment_favourite"
-        tools:layout="@layout/fragment_favourite" />
+        tools:layout="@layout/fragment_favourite" >
+        <action
+            android:id="@+id/action_favouriteFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mapFragment"
         android:name="com.aser.weatherwhisper.mapFragment.view.MapFragment"

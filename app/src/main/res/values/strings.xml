@@ -26,6 +26,7 @@
     <string name="map">Map</string>
     <string name="search_for_a_city">Search for a city</string>
     <string name="current_location">Current location</string>
+    <string name="googleMapApiKey">AIzaSyDdkK2dBt692LmLpX9Ooq0YJ3zWbFk1_hM</string>
     <string name="delete">Delete</string>
 
 </resources>

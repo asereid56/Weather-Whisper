@@ -1,4 +1,4 @@
-package com.aser.weatherwhisper.favouritefragment.viewmodel
+package com.aser.weatherwhisper.alertfragment.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,29 +12,29 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class FavouriteCitiesViewModel(private val repository: WeatherRepository) : ViewModel() {
-    private var _favCities: MutableStateFlow<ApiCityState> =
+class AlertViewModel(private val repository: WeatherRepository) : ViewModel() {
+    private val _alertCities: MutableStateFlow<ApiCityState> =
         MutableStateFlow<ApiCityState>(ApiCityState.Loading)
-    val favCities: StateFlow<ApiCityState> = _favCities
+    val alertCities: StateFlow<ApiCityState> = _alertCities
 
     init {
-        getFavCities()
+        getLocalAlertCities()
     }
 
-    private fun getFavCities() {
+    private fun getLocalAlertCities() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.getFavCities().catch { e ->
-                _favCities.value = ApiCityState.Failure(e)
-            }.collectLatest { storedCities ->
-                _favCities.value = ApiCityState.Success(storedCities)
+            repository.getAlertCities().catch { e ->
+                _alertCities.value = ApiCityState.Failure(e)
+            }.collectLatest { result ->
+                _alertCities.value = ApiCityState.Success(result)
             }
         }
     }
 
-    fun removeFromFav(city: City) {
+    fun deleteFromAlertCities(city: City) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteCityFromFav(city)
-            getFavCities()
+            getLocalAlertCities()
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.aser.weatherwhisper.favouritefragment.view
+package com.aser.weatherwhisper.alertfragment.view
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -8,15 +8,12 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.aser.weatherwhisper.R
-import com.aser.weatherwhisper.databinding.FragmentFavouriteBinding
+import com.aser.weatherwhisper.alertfragment.viewmodel.AlertFactory
+import com.aser.weatherwhisper.alertfragment.viewmodel.AlertViewModel
+import com.aser.weatherwhisper.databinding.FragmentAlertBinding
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
-import com.aser.weatherwhisper.favouritefragment.viewmodel.FavouriteCitiesViewModel
-import com.aser.weatherwhisper.favouritefragment.viewmodel.FavouriteFactory
-import com.aser.weatherwhisper.mapFragment.viewmodel.MapViewModelFactory
 import com.aser.weatherwhisper.model.City
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
@@ -24,43 +21,42 @@ import com.aser.weatherwhisper.utils.ApiCityState
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class FavouriteFragment : Fragment(), OnDeleteClickListener {
-    private lateinit var binding: FragmentFavouriteBinding
-    private lateinit var viewModel: FavouriteCitiesViewModel
-    private lateinit var viewModelFactory: FavouriteFactory
-    private lateinit var favAdapter: FavAdapter
+class AlertFragment : Fragment(), OnDeleteClickListener {
+    private lateinit var binding: FragmentAlertBinding
+    private lateinit var viewModel: AlertViewModel
+    private lateinit var alertFactory: AlertFactory
+    private lateinit var alertAdapter: AlertAdapter
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentFavouriteBinding.inflate(inflater, container, false)
-        viewModelFactory = FavouriteFactory(
+        binding = FragmentAlertBinding.inflate(inflater, container, false)
+        alertFactory = AlertFactory(
             WeatherRepository.getInstance(
                 WeatherRemoteDataSource.instance,
-                CitiesLocalDataBase(requireContext())
+                CitiesLocalDataBase.getInstance(requireContext())
             )
         )
-        viewModel = ViewModelProvider(this, viewModelFactory)[FavouriteCitiesViewModel::class.java]
+        viewModel = ViewModelProvider(this, alertFactory)[AlertViewModel::class.java]
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        favAdapter = FavAdapter(this)
+        alertAdapter = AlertAdapter(this)
         setUpRecycleView()
-
         lifecycleScope.launch {
-            viewModel.favCities.collectLatest { result ->
+            viewModel.alertCities.collectLatest { result ->
                 when (result) {
                     is ApiCityState.Loading -> {
                         binding.progressBar.visibility = View.VISIBLE
-                        binding.FavRecycleView.visibility = View.INVISIBLE
+                        binding.alertRecycleView.visibility = View.INVISIBLE
                     }
 
                     is ApiCityState.Success -> {
                         binding.progressBar.visibility = View.INVISIBLE
-                        binding.FavRecycleView.visibility = View.VISIBLE
-                        favAdapter.submitList(result.data)
+                        binding.alertRecycleView.visibility = View.VISIBLE
+                        alertAdapter.submitList(result.data)
                     }
 
                     else -> {
@@ -70,37 +66,22 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
                             "There's a problem with the server ",
                             Toast.LENGTH_SHORT
                         ).show()
+
                     }
                 }
             }
         }
-        favAdapter.onItemClickListener(object : FavAdapter.OnItemClickListener {
-            override fun onClickItem(city: City) {
-                navigateToHomeFragment(city)
-            }
-
-        })
-    }
-
-    private fun navigateToHomeFragment(city: City) {
-        val action = FavouriteFragmentDirections.actionFavouriteFragmentToHomeFragment(
-            city.longitude.toFloat(),
-            city.latitude.toFloat()
-        )
-        action.cityName = city.cityName
-        findNavController().navigate(action)
     }
 
     private fun setUpRecycleView() {
-        val recycleView: RecyclerView = binding.FavRecycleView
-        recycleView.layoutManager =
+        val recyclerView: RecyclerView = binding.alertRecycleView
+        recyclerView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
-        recycleView.adapter = favAdapter
-
+        recyclerView.adapter = alertAdapter
     }
 
     override fun onDeleteClick(city: City) {
-        viewModel.removeFromFav(city)
+        viewModel.deleteFromAlertCities(city)
     }
 
 }
