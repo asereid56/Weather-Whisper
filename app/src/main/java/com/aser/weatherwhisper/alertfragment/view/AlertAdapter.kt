@@ -21,7 +21,6 @@ class AlertAdapter(private val onDeleteClickListener: OnDeleteClickListener) :
     fun onItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AlertAdapter.MyViewModel {
         val inflater: LayoutInflater =
             parent.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater

@@ -11,4 +11,6 @@
     <color name="a">#1B4242</color>
     <color name="zar2awy">#0766AD</color>
     <color name="darkGray">#808080</color>
+    <color name="red">#ff4122</color>
+    <color name="darkRed">#fb3b1e</color>
 </resources>

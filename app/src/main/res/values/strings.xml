@@ -27,6 +27,11 @@
     <string name="search_for_a_city">Search for a city</string>
     <string name="current_location">Current location</string>
     <string name="googleMapApiKey">AIzaSyDdkK2dBt692LmLpX9Ooq0YJ3zWbFk1_hM</string>
+    <string name="alertTitle">Delete Weather Alert</string>
+    <string name="alertMessage">Are you sure you want to delete the weather alert ?</string>
     <string name="delete">Delete</string>
-
+    <string name="cancel">Cancel</string>
+    <string name="alertDeleted">Weather alert deleted</string>
+    <string name="favMessage">Are you sure you want to delete the city from favourite ?</string>
+    <string name="favDeleted">City deleted from favourite</string>
 </resources>

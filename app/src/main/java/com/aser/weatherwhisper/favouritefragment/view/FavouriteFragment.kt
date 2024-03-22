@@ -5,7 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.Toast
+import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -16,11 +18,11 @@ import com.aser.weatherwhisper.databinding.FragmentFavouriteBinding
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
 import com.aser.weatherwhisper.favouritefragment.viewmodel.FavouriteCitiesViewModel
 import com.aser.weatherwhisper.favouritefragment.viewmodel.FavouriteFactory
-import com.aser.weatherwhisper.mapFragment.viewmodel.MapViewModelFactory
 import com.aser.weatherwhisper.model.City
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
 import com.aser.weatherwhisper.utils.ApiCityState
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -53,23 +55,35 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
             viewModel.favCities.collectLatest { result ->
                 when (result) {
                     is ApiCityState.Loading -> {
-                        binding.progressBar.visibility = View.VISIBLE
-                        binding.FavRecycleView.visibility = View.INVISIBLE
+                        binding.favRecycleView.visibility = View.INVISIBLE
+                        binding.lottie.visibility = View.VISIBLE
+                        binding.lottie.setAnimation(R.raw.favourite)
+                        binding.lottie.playAnimation()
                     }
 
                     is ApiCityState.Success -> {
-                        binding.progressBar.visibility = View.INVISIBLE
-                        binding.FavRecycleView.visibility = View.VISIBLE
-                        favAdapter.submitList(result.data)
+                        if (result.data.isNullOrEmpty()) {
+                            binding.lottie.visibility = View.VISIBLE
+                            binding.lottie.setAnimation(R.raw.favourite)
+                            binding.lottie.playAnimation()
+                            binding.favRecycleView.visibility = View.INVISIBLE
+
+                        } else {
+                            binding.favRecycleView.visibility = View.VISIBLE
+                            favAdapter.submitList(result.data)
+                            binding.lottie.visibility = View.GONE
+                        }
                     }
 
                     else -> {
-                        binding.progressBar.visibility = View.GONE
                         Toast.makeText(
                             requireContext(),
                             "There's a problem with the server ",
                             Toast.LENGTH_SHORT
                         ).show()
+                        binding.lottie.visibility = View.VISIBLE
+                        binding.lottie.setAnimation(R.raw.favourite)
+                        binding.lottie.playAnimation()
                     }
                 }
             }
@@ -92,7 +106,7 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
     }
 
     private fun setUpRecycleView() {
-        val recycleView: RecyclerView = binding.FavRecycleView
+        val recycleView: RecyclerView = binding.favRecycleView
         recycleView.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         recycleView.adapter = favAdapter
@@ -100,7 +114,33 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
     }
 
     override fun onDeleteClick(city: City) {
-        viewModel.removeFromFav(city)
+        val dialogView = layoutInflater.inflate(R.layout.cancel_delete_fav, null)
+
+        val alertDialogBuilder = MaterialAlertDialogBuilder(requireContext())
+            .setView(dialogView).setBackground(
+                ResourcesCompat.getDrawable(
+                    resources,
+                    R.drawable.dialog_background,
+                    requireActivity().theme
+                )
+            )
+
+
+        val btnCancel = dialogView.findViewById<Button>(R.id.btnCancel)
+        val btnDelete = dialogView.findViewById<Button>(R.id.btnDelete)
+
+
+        var alertDialog = alertDialogBuilder.create()
+        btnCancel.setOnClickListener {
+            alertDialog.dismiss()
+        }
+
+        btnDelete.setOnClickListener {
+            viewModel.removeFromFav(city)
+            Toast.makeText(requireContext(), R.string.favDeleted, Toast.LENGTH_SHORT).show()
+            alertDialog.dismiss()
+        }
+        alertDialog.show()
     }
 
 }

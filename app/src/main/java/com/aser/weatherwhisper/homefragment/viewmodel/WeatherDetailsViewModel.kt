@@ -15,13 +15,6 @@ class WeatherDetailsViewModel(private val repo: WeatherRepository) : ViewModel()
         MutableStateFlow<ApiWeatherState>(ApiWeatherState.Loading)
     val weatherResponse: StateFlow<ApiWeatherState> = _weatherResponse
 
-//    fun getWeatherByLatAndLong(latitude: Double, longitude: Double) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            val response = repo.getWeatherByLatAndLong(latitude, longitude)
-//            _weatherResponse.postValue(response!!)
-//        }
-//    }
-
     fun getWeatherDetails(latitude: Double, longitude: Double, language: String, units: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repo.getWeatherDetails(latitude, longitude, language, units).catch { e ->

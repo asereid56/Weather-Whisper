@@ -1,5 +1,6 @@
 package com.aser.weatherwhisper.alertfragment.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aser.weatherwhisper.model.City
@@ -33,8 +34,14 @@ class AlertViewModel(private val repository: WeatherRepository) : ViewModel() {
 
     fun deleteFromAlertCities(city: City) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteCityFromFav(city)
+            repository.deleteCityFromAlert(city)
             getLocalAlertCities()
+        }
+    }
+
+    fun cancelWorkForAlert(city: City, context: Context) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.cancelWorkerForCity(city, context)
         }
     }
 }

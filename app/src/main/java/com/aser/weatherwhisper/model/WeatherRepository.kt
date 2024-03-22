@@ -1,11 +1,17 @@
 package com.aser.weatherwhisper.model
 
+import android.content.Context
 import android.util.Log
+import androidx.work.WorkManager
+import androidx.work.Worker
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
 import com.aser.weatherwhisper.model.countryname.WeatherResponseCountry
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
 import com.google.android.gms.common.api.internal.ApiKey
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
+import java.util.UUID
 
 class WeatherRepository private constructor(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
@@ -69,5 +75,10 @@ class WeatherRepository private constructor(
 
     suspend fun deleteCityFromAlert(city: City) {
         citiesLocalDataBase.deleteCityFromAlert(city)
+    }
+
+    suspend fun cancelWorkerForCity(city: City, context: Context) {
+        val uniqueKey = city.cityName + city.type
+        WorkManager.getInstance(context).cancelAllWorkByTag(uniqueKey)
     }
 }

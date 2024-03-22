@@ -28,22 +28,27 @@
         android:fontFamily="@font/regular"
         android:text="@string/favourite"
         android:textColor="@color/purple"
-        android:textSize="42sp"
+        android:textSize="45sp"
         app:layout_constraintEnd_toStartOf="@+id/guideline2"
         app:layout_constraintStart_toStartOf="@+id/guideline"
         app:layout_constraintTop_toTopOf="parent" />
-    <ProgressBar
-        android:id="@+id/progressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:indeterminateTint="@color/purple"
+
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/lottie"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:padding="30dp"
+        android:scaleType="fitCenter"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@id/guideline2"
         app:layout_constraintStart_toStartOf="@id/guideline"
-        app:layout_constraintTop_toBottomOf="@id/textView"/>
+        app:layout_constraintTop_toBottomOf="@id/textView"
+        app:lottie_autoPlay="true"
+        app:lottie_loop="true"
+        app:lottie_rawRes="@raw/alerts" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/FavRecycleView"
+        android:id="@+id/favRecycleView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="8dp"

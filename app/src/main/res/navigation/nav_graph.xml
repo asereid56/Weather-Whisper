@@ -23,6 +23,9 @@
         <action
             android:id="@+id/action_homeFragment_to_favouriteFragment"
             app:destination="@id/favouriteFragment" />
+        <action
+            android:id="@+id/action_homeFragment_to_alertFragment"
+            app:destination="@id/alertFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingFragment"
@@ -40,7 +43,11 @@
         android:id="@+id/alertFragment"
         android:name="com.aser.weatherwhisper.alertfragment.view.AlertFragment"
         android:label="fragment_alert"
-        tools:layout="@layout/fragment_alert" />
+        tools:layout="@layout/fragment_alert" >
+        <action
+            android:id="@+id/action_alertFragment_to_homeFragment"
+            app:destination="@id/homeFragment" />
+    </fragment>
     <fragment
         android:id="@+id/favouriteFragment"
         android:name="com.aser.weatherwhisper.favouritefragment.view.FavouriteFragment"

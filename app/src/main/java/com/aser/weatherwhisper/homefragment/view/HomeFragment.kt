@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
+import android.location.Address
+import android.location.Geocoder
 import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
@@ -21,6 +23,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.airbnb.lottie.LottieAnimationView
 import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.databinding.FragmentHomeBinding
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
@@ -47,7 +50,6 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -125,8 +127,6 @@ class HomeFragment : Fragment() {
         binding.weeklyForecast.setOnClickListener {
             showWeeklyForecastRecycleView()
         }
-
-        // refreshWeatherResponseObserver()
     }
 
 
@@ -137,9 +137,36 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateUI(weatherResponse: WeatherResponse) {
-        val timezoneParts = weatherResponse.timezone.split("/")
-        val cityName = timezoneParts.last()
-        binding.countryText.text = cityName
+        var city = getNameOfGovernorateFromLatAndLong(
+            requireContext(),
+            weatherResponse.lat,
+            weatherResponse.lon
+        )
+        if (cityNameFromArgs == "defaultValue") {
+            if (city == "") {
+                val timezoneParts = weatherResponse.timezone.split("/")
+                val cityName = timezoneParts.last()
+                binding.countryText.text = cityName
+            } else {
+                binding.countryText.text = city
+            }
+        } else {
+            binding.countryText.text = cityNameFromArgs
+        }
+
+
+        val mainWeather = weatherResponse.current.weather.firstOrNull()!!.main
+        if (mainWeather == "Rain") {
+            binding.lottieAnimation.setAnimation(R.raw.rain)
+            binding.lottieAnimation.playAnimation()
+        } else if (mainWeather == "snow" || weatherResponse.current.temp < 0) {
+            binding.lottieAnimation.setAnimation(R.raw.snow)
+            binding.lottieAnimation.playAnimation()
+        } else {
+            binding.lottieAnimation.cancelAnimation()
+            binding.lottieAnimation.visibility = View.GONE
+        }
+
 
         val dateFormat = SimpleDateFormat("EEE, dd MMM", Locale.getDefault())
         val formattedDate = dateFormat.format(Date(weatherResponse.current.dt * 1000L))
@@ -275,20 +302,12 @@ class HomeFragment : Fragment() {
                                             language = language,
                                             units = unit
                                         )
-                                        Log.i(
-                                            "TAG",
-                                            "onLocationResult: in if statement  ${location.latitude} , ${location.longitude}"
-                                        )
                                     } else {
                                         viewModel.getWeatherDetails(
                                             latitude = latFromArgs!!.toDouble(),
                                             longitude = longFromArgs!!.toDouble(),
                                             language = language,
                                             units = unit
-                                        )
-                                        Log.i(
-                                            "TAG",
-                                            "in else statement :  $longFromArgs $latFromArgs "
                                         )
                                     }
                                     refreshWeatherResponseObserver()
@@ -321,13 +340,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun refreshWeatherResponseObserver() {
-        Log.i("TAG", "refreshWeatherResponseObserver: out ")
         lifecycleScope.launch(Dispatchers.Main) {
-            Log.i("TAG", "refreshWeatherResponseObserver: in ")
             viewModel.weatherResponse.collect { result ->
                 when (result) {
                     is ApiWeatherState.Loading -> {
-                        Log.i("TAG", "refreshWeatherResponseObserver: in load")
                         binding.progressBar.visibility = View.VISIBLE
                         binding.progressBar2.visibility = View.VISIBLE
                         binding.recycleViewForecast.visibility = View.INVISIBLE
@@ -335,7 +351,6 @@ class HomeFragment : Fragment() {
                     }
 
                     is ApiWeatherState.Success -> {
-                        Log.i("TAG", "refreshWeatherResponseObserver: in succ")
                         binding.progressBar.visibility = View.GONE
                         binding.progressBar2.visibility = View.GONE
                         binding.recycleViewForecast.visibility = View.VISIBLE
@@ -344,7 +359,6 @@ class HomeFragment : Fragment() {
                     }
 
                     else -> {
-                        Log.i("TAG", "refreshWeatherResponseObserver: in fail")
                         binding.recycleViewForecast.visibility = View.INVISIBLE
                         binding.detailsLinear.visibility = View.INVISIBLE
                         Toast.makeText(
@@ -379,4 +393,22 @@ class HomeFragment : Fragment() {
 
     }
 
+    private fun getNameOfGovernorateFromLatAndLong(
+        context: Context,
+        lat: Double,
+        long: Double
+    ): String {
+        val geocoder = Geocoder(context, Locale.getDefault())
+        var governorateName = ""
+        try {
+            val addresses: List<Address>? = geocoder.getFromLocation(lat, long, 1)
+            if (!addresses.isNullOrEmpty()) {
+                val address: Address = addresses[0]
+                governorateName = address.subAdminArea ?: ""
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return governorateName
+    }
 }

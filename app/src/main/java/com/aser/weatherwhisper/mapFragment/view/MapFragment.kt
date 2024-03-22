@@ -3,6 +3,7 @@ package com.aser.weatherwhisper.mapFragment.view
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.location.Geocoder
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
+import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.databinding.FragmentMapBinding
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
 import com.aser.weatherwhisper.mapFragment.viewmodel.MapViewModel
@@ -33,15 +35,24 @@ import com.aser.weatherwhisper.utils.Constants
 import com.aser.weatherwhisper.utils.Constants.Companion.LANG_ENGLISH
 import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_CELSIUS
 import com.aser.weatherwhisper.worker.AlertWorker
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.GoogleMap.OnMapClickListener
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
-class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
+class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapReadyCallback,
+    OnMapClickListener {
     lateinit var binding: FragmentMapBinding
     lateinit var viewModel: MapViewModel
     lateinit var mapFactory: MapViewModelFactory
@@ -50,6 +61,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
     private var language: String = LANG_ENGLISH
     private var selectedDate: String = ""
     private var selectedTime: String = ""
+    private var mGoogleMap: GoogleMap? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -106,6 +118,9 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
                 navigateToHomeFragment(weatherResponseCountry)
             }
         })
+        val mapFragment =
+            childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment?
+        mapFragment?.getMapAsync(this)
     }
 
     private fun navigateToHomeFragment(weatherResponseCountry: WeatherResponseCountry) {
@@ -145,7 +160,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
             viewModel.cityResponse.collect { result ->
                 when (result) {
                     is ApiSearchState.Loading -> {
-                        binding.progressBarCity.visibility = View.VISIBLE
+                        //    binding.progressBarCity.visibility = View.VISIBLE
                         binding.citiesRecycleView.visibility = View.INVISIBLE
                     }
 
@@ -153,6 +168,12 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
                         binding.progressBarCity.visibility = View.INVISIBLE
                         binding.citiesRecycleView.visibility = View.VISIBLE
                         countryAdapter.submitList(result.data)
+                        val cityDetails = result.data
+                        if (cityDetails.isNotEmpty()) {
+                            val latitude = cityDetails[0].coord.lat
+                            val longitude = cityDetails[0].coord.lon
+                            addMarkerToMap(latitude, longitude, cityDetails[0].name)
+                        }
                     }
 
                     else -> {
@@ -184,10 +205,8 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
-                // Corrected date format: yyyy-MM-dd
                 selectedDate =
                     String.format(Locale.getDefault(), "%d-%02d-%02d", year, month + 1, dayOfMonth)
-                // After selecting the date, show the time picker dialog
                 showTimeDialog(city)
             },
             Calendar.getInstance().get(Calendar.YEAR),
@@ -199,21 +218,21 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
 
 
     private fun showTimeDialog(city: City) {
+        val uniqueKey = city.cityName + city.type
+
         val timePickerDialog = TimePickerDialog(
             requireContext(),
             TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
-                // Format the selected time
                 selectedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minute)
-                // Construct the final date-time string
                 val dateTime = "$selectedDate $selectedTime"
 
-                // Convert the date-time string to milliseconds
                 val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
                 val selectedMillis = sdf.parse(dateTime)?.time ?: return@OnTimeSetListener
 
                 try {
                     val latitude = city.latitude
                     val longitude = city.longitude
+                    val cityName = city.cityName
 
                     // Pass the date-time and other parameters to the WorkManager
                     val inputData = workDataOf(
@@ -221,6 +240,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
                         AlertWorker.KEY_LATITUDE to latitude,
                         AlertWorker.KEY_LANG to language,
                         AlertWorker.KEY_UNIT to unit,
+                        AlertWorker.KEY_CITY_NAME to cityName
                     )
 
                     val alertWorkRequest = OneTimeWorkRequestBuilder<AlertWorker>()
@@ -229,6 +249,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
                             selectedMillis - System.currentTimeMillis(),
                             java.util.concurrent.TimeUnit.MILLISECONDS
                         )
+                        .addTag(uniqueKey)
                         .build()
 
                     // Enqueue the WorkManager task
@@ -245,6 +266,38 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener {
             false
         )
         timePickerDialog.show()
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mGoogleMap = googleMap
+        mGoogleMap?.setOnMapClickListener(this)
+    }
+
+    private fun addMarkerToMap(latitude: Double, longitude: Double, cityName: String) {
+        val latLng = LatLng(latitude, longitude)
+        val markerOptions = MarkerOptions().position(latLng).title(cityName)
+        mGoogleMap?.addMarker(markerOptions)
+        mGoogleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 9f))
+    }
+
+    override fun onMapClick(latLng: LatLng) {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        try {
+            val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+            if (addresses!!.isNotEmpty()) {
+                val cityName = addresses[0].locality
+                cityName?.let {
+                    mGoogleMap?.clear()
+                    addMarkerToMap(latLng.latitude, latLng.longitude, cityName)
+                    retrieveCityDetails(cityName)
+                }
+            } else {
+                Toast.makeText(requireContext(), "City not found", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: IOException) {
+            Log.e("MapFragment", "Error fetching city: ${e.message}", e)
+            Toast.makeText(requireContext(), "Error fetching city", Toast.LENGTH_SHORT).show()
+        }
     }
 
 }
