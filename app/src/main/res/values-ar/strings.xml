@@ -34,5 +34,6 @@
     <string name="alertDeleted">تم حذف تنبيه الطقس</string>
     <string name="favMessage">هل أنت متأكد من رغبتك في حذف المدينة من المفضلة؟</string>
     <string name="favDeleted">تم حذف المدينة من المفضلة</string>
-
+    <string name="weatherDisc">حالة الطقس في </string>
+    <string name="completeWeatherDis">:</string>
 </resources>

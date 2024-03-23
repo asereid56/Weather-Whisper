@@ -34,4 +34,6 @@
     <string name="alertDeleted">Weather alert deleted</string>
     <string name="favMessage">Are you sure you want to delete the city from favourite ?</string>
     <string name="favDeleted">City deleted from favourite</string>
+    <string name="weatherDisc">Weather conditions in </string>
+    <string name="completeWeatherDis">:</string>
 </resources>

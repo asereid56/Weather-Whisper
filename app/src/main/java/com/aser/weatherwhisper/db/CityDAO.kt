@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.aser.weatherwhisper.model.City
+import com.aser.weatherwhisper.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -17,10 +18,18 @@ interface CityDAO {
     fun getALlAlertCity(): Flow<List<City>>
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertCity(city: City):Long
+    suspend fun insertCity(city: City): Long
 
     @Delete
-    suspend fun deleteCity(city: City):Int
+    suspend fun deleteCity(city: City): Int
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCityToHome(json: String): Long
+
+    @Query("DELETE FROM home_city_table")
+    suspend fun deleteAllCitiesFromHome(): Int
+
+    @Query("SELECT * FROM home_city_table LIMIT 1")
+    fun getCityToHomeFragment(): Flow<String?>
 
 }

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.WorkManager
 import androidx.work.Worker
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
+import com.aser.weatherwhisper.db.ICitiesLocalDataBase
 import com.aser.weatherwhisper.model.countryname.WeatherResponseCountry
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
 import com.google.android.gms.common.api.internal.ApiKey
@@ -15,7 +16,7 @@ import java.util.UUID
 
 class WeatherRepository private constructor(
     private val weatherRemoteDataSource: WeatherRemoteDataSource,
-    private val citiesLocalDataBase: CitiesLocalDataBase
+    private val citiesLocalDataBase: ICitiesLocalDataBase
 ) {
     companion object {
         @Volatile

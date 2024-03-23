@@ -16,5 +16,8 @@ class Constants {
         const val METER = "meter"
         const val SPEED_UNIT = "speed"
         const val MILE = "mile"
+        const val LOCATION = "location"
+        const val MAP = "map"
+        const val CURRENT_LOCATION = "currentLocation"
     }
 }

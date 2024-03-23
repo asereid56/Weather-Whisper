@@ -81,13 +81,9 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val sharedPreferences =
-            requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+        getDetailsOfTheUnitsAndLanguageFromSetting()
 
-        unit = sharedPreferences.getString(Constants.MEASUREMENT_UNIT, UNITS_CELSIUS)!!
-        language = sharedPreferences.getString(Constants.LANG, LANG_ENGLISH)!!
-
-        countryAdapter = CityAdapter(this, this)
+        countryAdapter = CityAdapter(unit, this, this)
         showCities()
 
         BottomSheetBehavior.from(binding.bottomSheet).apply {
@@ -127,10 +123,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
         val cityName = weatherResponseCountry.name
         val longitude = weatherResponseCountry.coord.lon.toFloat()
         val latitude = weatherResponseCountry.coord.lat.toFloat()
-        Log.i(
-            "TAG",
-            "navigateToHomeFragment: ${weatherResponseCountry.name}${weatherResponseCountry.coord.lon} ${weatherResponseCountry.coord.lat} "
-        )
+
         val action =
             MapFragmentDirections.actionMapFragmentToHomeFragment(longitude, latitude)
         action.setCityName(cityName)
@@ -160,7 +153,6 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
             viewModel.cityResponse.collect { result ->
                 when (result) {
                     is ApiSearchState.Loading -> {
-                        //    binding.progressBarCity.visibility = View.VISIBLE
                         binding.citiesRecycleView.visibility = View.INVISIBLE
                     }
 
@@ -192,16 +184,16 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
 
     override fun onCountryAlertListener(city: City) {
         showDateDialog(city)
-        viewModel.addToAlert(city)
-
     }
 
 
     override fun onCountryFavListener(city: City) {
         viewModel.addToFav(city)
+        Toast.makeText(requireContext(), "Added to favourite", Toast.LENGTH_SHORT).show()
     }
 
     private fun showDateDialog(city: City) {
+        val calender = Calendar.getInstance()
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             DatePickerDialog.OnDateSetListener { _, year, month, dayOfMonth ->
@@ -209,10 +201,11 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
                     String.format(Locale.getDefault(), "%d-%02d-%02d", year, month + 1, dayOfMonth)
                 showTimeDialog(city)
             },
-            Calendar.getInstance().get(Calendar.YEAR),
-            Calendar.getInstance().get(Calendar.MONTH),
-            Calendar.getInstance().get(Calendar.DAY_OF_MONTH)
+            calender.get(Calendar.YEAR),
+            calender.get(Calendar.MONTH),
+            calender.get(Calendar.DAY_OF_MONTH)
         )
+        datePickerDialog.datePicker.minDate = calender.timeInMillis
         datePickerDialog.show()
     }
 
@@ -260,6 +253,8 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
                     e.printStackTrace()
                     Log.e("MapFragment", "Error parsing date: ${e.message}", e)
                 }
+                Toast.makeText(requireContext(), "Added to alert", Toast.LENGTH_SHORT).show()
+                viewModel.addToAlert(city)
             },
             0,
             0,
@@ -275,6 +270,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
 
     private fun addMarkerToMap(latitude: Double, longitude: Double, cityName: String) {
         val latLng = LatLng(latitude, longitude)
+        mGoogleMap?.clear()
         val markerOptions = MarkerOptions().position(latLng).title(cityName)
         mGoogleMap?.addMarker(markerOptions)
         mGoogleMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 9f))
@@ -289,6 +285,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
                 cityName?.let {
                     mGoogleMap?.clear()
                     addMarkerToMap(latLng.latitude, latLng.longitude, cityName)
+                    binding.searchText.text.clear()
                     retrieveCityDetails(cityName)
                 }
             } else {
@@ -298,6 +295,14 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
             Log.e("MapFragment", "Error fetching city: ${e.message}", e)
             Toast.makeText(requireContext(), "Error fetching city", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun getDetailsOfTheUnitsAndLanguageFromSetting() {
+        val sharedPreferences =
+            requireContext().getSharedPreferences("my_prefs", Context.MODE_PRIVATE)
+
+        unit = sharedPreferences.getString(Constants.MEASUREMENT_UNIT, UNITS_CELSIUS)!!
+        language = sharedPreferences.getString(Constants.LANG, LANG_ENGLISH)!!
     }
 
 }

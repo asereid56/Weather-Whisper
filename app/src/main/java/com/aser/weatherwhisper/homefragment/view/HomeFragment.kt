@@ -1,12 +1,15 @@
 package com.aser.weatherwhisper.homefragment.view
 
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Address
 import android.location.Geocoder
 import android.location.LocationManager
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
@@ -69,6 +72,36 @@ class HomeFragment : Fragment() {
     private var cityNameFromArgs: String? = null
     private var longFromArgs: Float? = null
     private var latFromArgs: Float? = null
+
+    private val connectivityReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            if (isNetworkConnected()) {
+                if (checkPermission()) {
+                    if (isLocationEnable()) {
+                        getFreshLocation()
+                    } else {
+                        enableLocationService()
+                    }
+                } else {
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                        ),
+                        REQUEST_LOCATION_CODE
+                    )
+                }
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "No internet connection",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -95,6 +128,33 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        context?.registerReceiver(
+            connectivityReceiver,
+            IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        context?.unregisterReceiver(connectivityReceiver)
+    }
+
+    private fun isNetworkConnected(): Boolean {
+        val connectivityManager =
+            context?.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetworkInfo = connectivityManager.activeNetworkInfo
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected
+    }
+
+    private fun checkInternetConnectivityAndProceedWithAction(action: () -> Unit) {
+        if (isNetworkConnected()) {
+            action.invoke()
+        }
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -103,22 +163,23 @@ class HomeFragment : Fragment() {
 
         dailyAdapter = DailyAdapter(unit)
         hourlyAdapter = HourlyAdapter(unit)
-
-        if (checkPermission()) {
-            if (isLocationEnable()) {
-                getFreshLocation()
+        checkInternetConnectivityAndProceedWithAction {
+            if (checkPermission()) {
+                if (isLocationEnable()) {
+                    getFreshLocation()
+                } else {
+                    enableLocationService()
+                }
             } else {
-                enableLocationService()
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    ),
+                    REQUEST_LOCATION_CODE
+                )
             }
-        } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                arrayOf(
-                    android.Manifest.permission.ACCESS_FINE_LOCATION,
-                    android.Manifest.permission.ACCESS_COARSE_LOCATION
-                ),
-                REQUEST_LOCATION_CODE
-            )
         }
 
         binding.hourlyForecast.setOnClickListener {

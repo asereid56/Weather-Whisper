@@ -2,6 +2,7 @@ package com.aser.weatherwhisper.db
 
 import android.content.Context
 import com.aser.weatherwhisper.model.City
+import com.aser.weatherwhisper.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 
 class CitiesLocalDataBase(context: Context) : ICitiesLocalDataBase {
@@ -37,6 +38,21 @@ class CitiesLocalDataBase(context: Context) : ICitiesLocalDataBase {
     override fun getAlertCities(): Flow<List<City>> {
         return dao.getALlAlertCity()
     }
+
+//    override suspend fun insertCityToHomeFragment(weatherResponse: WeatherResponse) {
+//        val json = JsonUtils.weatherResponseToJson(weatherResponse)
+//        dao.insertCityToHome(json)
+//    }
+//
+//    override suspend fun deleteAllCitiesFromHomeFragment() {
+//        dao.deleteAllCitiesFromHome()
+//    }
+//
+//    override fun getCityToHomeFragment(): Flow<WeatherResponse?> {
+//        return dao.getCityToHomeFragment().map { json ->
+//            json?.let { JsonUtils.jsonToWeatherResponse(it) }
+//        }
+//    }
 
     companion object {
         @Volatile

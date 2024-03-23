@@ -8,7 +8,6 @@ import android.content.Intent
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.aser.weatherwhisper.MainActivity
@@ -19,7 +18,6 @@ import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.model.WeatherResponse
 import com.aser.weatherwhisper.network.RetrofitHelper
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
-import com.aser.weatherwhisper.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -58,7 +56,11 @@ class AlertWorker(private val context: Context, params: WorkerParameters) :
             val weatherResponse = getWeatherDetails(latitude, longitude, unit, lang)
 
             weatherResponse?.let {
-                showNotification(it.current.weather[0].description)
+                showNotification(
+                    context.getString(R.string.weatherDisc) + " " + cityName + " " + context.getString(
+                        R.string.completeWeatherDis
+                    ) + it.current.weather[0].description
+                )
                 Log.d("AlertWorker", "Notification shown")
                 deleteCityFromRoom(city)
             }
@@ -73,7 +75,7 @@ class AlertWorker(private val context: Context, params: WorkerParameters) :
         }
     }
 
-    suspend fun deleteCityFromRoom(city: City) {
+    private suspend fun deleteCityFromRoom(city: City) {
         val repo = WeatherRepository.getInstance(
             WeatherRemoteDataSource.instance,
             CitiesLocalDataBase.getInstance(context)
@@ -131,7 +133,7 @@ class AlertWorker(private val context: Context, params: WorkerParameters) :
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle("Weather Alert")
             .setContentText(message)
-            .setSmallIcon(R.drawable.heart)
+            .setSmallIcon(R.drawable.cloud_alert)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()

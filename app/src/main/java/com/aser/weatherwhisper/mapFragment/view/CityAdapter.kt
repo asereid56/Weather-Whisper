@@ -13,6 +13,7 @@ import com.aser.weatherwhisper.model.countryname.WeatherResponseCountry
 import com.aser.weatherwhisper.utils.Constants
 
 class CityAdapter(
+    private val unit: String,
     private val onFavClickListener: OnFavClickListener,
     private val onAlertClickListener: OnAlertClickListener
 ) : ListAdapter<WeatherResponseCountry, CityAdapter.MyViewHolder>(CityDiffUtil()) {
@@ -40,13 +41,13 @@ class CityAdapter(
         val currentItem = getItem(position)
         binding.cityName.text = currentItem.name
         binding.cityDis.text = currentItem.weather.firstOrNull()?.description ?: ""
-        binding.cityTemp.text = String.format("%.0f °C", currentItem.main.temp)
+        binding.cityTemp.text = formatTemperature(currentItem.main.temp.toFloat(), unit)
         binding.btnFav.setOnClickListener {
             var city = City(currentItem.name, currentItem.coord.lon, currentItem.coord.lat, "Fav")
             onFavClickListener.onCountryFavListener(city)
         }
         binding.btnAlert.setOnClickListener {
-            var city = City(currentItem.name , currentItem.coord.lon , currentItem.coord.lat , "Alert")
+            var city = City(currentItem.name, currentItem.coord.lon, currentItem.coord.lat, "Alert")
             onAlertClickListener.onCountryAlertListener(city)
         }
         holder.itemView.setOnClickListener {

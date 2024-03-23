@@ -13,8 +13,19 @@ import androidx.navigation.fragment.NavHostFragment
 import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.databinding.FragmentSettingBinding
 import com.aser.weatherwhisper.utils.Constants
+import com.aser.weatherwhisper.utils.Constants.Companion.CURRENT_LOCATION
+import com.aser.weatherwhisper.utils.Constants.Companion.LANG
+import com.aser.weatherwhisper.utils.Constants.Companion.LANG_ARABIC
+import com.aser.weatherwhisper.utils.Constants.Companion.LANG_ENGLISH
+import com.aser.weatherwhisper.utils.Constants.Companion.LOCATION
+import com.aser.weatherwhisper.utils.Constants.Companion.MAP
 import com.aser.weatherwhisper.utils.Constants.Companion.MEASUREMENT_UNIT
+import com.aser.weatherwhisper.utils.Constants.Companion.METER
+import com.aser.weatherwhisper.utils.Constants.Companion.MILE
 import com.aser.weatherwhisper.utils.Constants.Companion.SPEED_UNIT
+import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_CELSIUS
+import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_FAHRENHEIT
+import com.aser.weatherwhisper.utils.Constants.Companion.UNITS_KELVIN
 import java.util.Locale
 
 class SettingFragment : Fragment() {
@@ -35,39 +46,69 @@ class SettingFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        when (unitsSharedPref.getString(MEASUREMENT_UNIT, UNITS_CELSIUS)) {
+            UNITS_CELSIUS -> binding.btnCelsius.isChecked = true
+            UNITS_KELVIN -> binding.btnKelvin.isChecked = true
+            UNITS_FAHRENHEIT -> binding.btnFahrenheit.isChecked = true
+        }
+        when (unitsSharedPref.getString(LANG, LANG_ENGLISH)) {
+            LANG_ENGLISH -> binding.btnEn.isChecked = true
+            LANG_ARABIC -> binding.btnAr.isChecked = true
+        }
+        when (unitsSharedPref.getString(SPEED_UNIT, METER)) {
+            METER -> binding.btnMeter.isChecked = true
+            MILE -> binding.btnMile.isChecked = true
+        }
+        when (unitsSharedPref.getString(LOCATION, CURRENT_LOCATION)) {
+            CURRENT_LOCATION -> binding.btnCurrentLocation.isChecked = true
+            MAP -> binding.btnMap.isChecked = true
+        }
+
+
         binding.btnAr.setOnClickListener {
-            unitsSharedPref.edit().putString(Constants.LANG, Constants.LANG_ARABIC).apply()
+            unitsSharedPref.edit().putString(LANG, LANG_ARABIC).apply()
             setLocale("ar")
+
         }
 
         binding.btnEn.setOnClickListener {
-            unitsSharedPref.edit().putString(Constants.LANG, Constants.LANG_ENGLISH).apply()
+            unitsSharedPref.edit().putString(LANG, LANG_ENGLISH).apply()
             setLocale("en")
         }
 
         binding.btnCelsius.setOnClickListener {
-            unitsSharedPref.edit().putString(MEASUREMENT_UNIT, Constants.UNITS_CELSIUS).apply()
+            unitsSharedPref.edit().putString(MEASUREMENT_UNIT, UNITS_CELSIUS).apply()
         }
 
         binding.btnKelvin.setOnClickListener {
-            unitsSharedPref.edit().putString(MEASUREMENT_UNIT, Constants.UNITS_KELVIN).apply()
+            unitsSharedPref.edit().putString(MEASUREMENT_UNIT, UNITS_KELVIN).apply()
         }
 
         binding.btnFahrenheit.setOnClickListener {
-            unitsSharedPref.edit().putString(MEASUREMENT_UNIT, Constants.UNITS_FAHRENHEIT).apply()
+            unitsSharedPref.edit().putString(MEASUREMENT_UNIT, UNITS_FAHRENHEIT).apply()
         }
 
         binding.btnMeter.setOnClickListener {
-            unitsSharedPref.edit().putString(SPEED_UNIT, Constants.METER).apply()
+            unitsSharedPref.edit().putString(SPEED_UNIT, METER).apply()
+
         }
 
         binding.btnMile.setOnClickListener {
-            unitsSharedPref.edit().putString(SPEED_UNIT, Constants.MILE).apply()
+            unitsSharedPref.edit().putString(SPEED_UNIT, MILE).apply()
+
         }
         binding.btnMap.setOnClickListener {
+            unitsSharedPref.edit().putString(LOCATION, MAP).apply()
             val navController = NavHostFragment.findNavController(this@SettingFragment)
             navController.navigate(R.id.action_settingFragment_to_mapFragment)
+
         }
+        binding.btnCurrentLocation.setOnClickListener {
+            unitsSharedPref.edit().putString(LOCATION, CURRENT_LOCATION).apply()
+            val navController = NavHostFragment.findNavController(this@SettingFragment)
+            navController.navigate(R.id.action_settingFragment_to_homeFragment)
+        }
+
 
     }
 

@@ -1,6 +1,7 @@
 package com.aser.weatherwhisper.db
 
 import com.aser.weatherwhisper.model.City
+import com.aser.weatherwhisper.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 
 interface ICitiesLocalDataBase {
@@ -11,4 +12,8 @@ interface ICitiesLocalDataBase {
     suspend fun deleteCityFromAlert(city: City)
     fun getFavCities(): Flow<List<City>>
     fun getAlertCities(): Flow<List<City>>
+//    suspend fun insertCityToHomeFragment(weatherResponse: WeatherResponse)
+//    suspend fun deleteAllCitiesFromHomeFragment(weatherResponse: WeatherResponse)
+//    fun getCityToHomeFragment(): Flow<WeatherResponse>
+
 }

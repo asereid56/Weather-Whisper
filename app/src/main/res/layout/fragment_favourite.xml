@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".favouritefragment.view.FavouriteFragment">
 
     <androidx.constraintlayout.widget.Guideline
@@ -45,7 +46,7 @@
         app:layout_constraintTop_toBottomOf="@id/textView"
         app:lottie_autoPlay="true"
         app:lottie_loop="true"
-        app:lottie_rawRes="@raw/alerts" />
+        app:lottie_rawRes="@raw/favourite" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/favRecycleView"
