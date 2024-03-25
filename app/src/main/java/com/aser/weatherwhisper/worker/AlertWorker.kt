@@ -37,9 +37,6 @@ class AlertWorker(private val context: Context, params: WorkerParameters) :
 
     override suspend fun doWork(): Result {
         try {
-
-            Log.d("AlertWorker", "Worker started")
-
             val latitude = inputData.getDouble(KEY_LATITUDE, 0.0)
             val longitude = inputData.getDouble(KEY_LONGITUDE, 0.0)
             val unit = inputData.getString(KEY_UNIT)
@@ -48,10 +45,6 @@ class AlertWorker(private val context: Context, params: WorkerParameters) :
             val cityName = inputData.getString(KEY_CITY_NAME)
             val city = City(cityName!!, longitude, latitude, "Alert")
 
-            Log.d(
-                "AlertWorker",
-                "Input data: Latitude=$latitude, Longitude=$longitude, Unit=$unit, Lang=$lang, DateTimeMillis=$dateTimeMillis"
-            )
 
             val weatherResponse = getWeatherDetails(latitude, longitude, unit, lang)
 
@@ -61,16 +54,13 @@ class AlertWorker(private val context: Context, params: WorkerParameters) :
                         R.string.completeWeatherDis
                     ) + it.current.weather[0].description
                 )
-                Log.d("AlertWorker", "Notification shown")
                 deleteCityFromRoom(city)
             }
 
-            Log.d("AlertWorker", "Worker completed successfully")
             return Result.success()
 
         } catch (e: Exception) {
 
-            Log.e("AlertWorker", "Error: ${e.message}", e)
             return Result.failure()
         }
     }

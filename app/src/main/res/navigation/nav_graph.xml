@@ -53,6 +53,9 @@
         <action
             android:id="@+id/action_alertFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_alertFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/favouriteFragment"
@@ -62,6 +65,9 @@
         <action
             android:id="@+id/action_favouriteFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_favouriteFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapFragment"
@@ -74,5 +80,11 @@
         <action
             android:id="@+id/action_mapFragment_to_homeFragment"
             app:destination="@id/homeFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_favouriteFragment"
+            app:destination="@id/favouriteFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_alertFragment"
+            app:destination="@id/alertFragment" />
     </fragment>
 </navigation>

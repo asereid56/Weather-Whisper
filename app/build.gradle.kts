@@ -1,9 +1,9 @@
 plugins {
-    id ("com.android.application")
-    id ("org.jetbrains.kotlin.android")
-    id ("kotlin-kapt")
-    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
-    id ("androidx.navigation.safeargs")
+    id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("kotlin-kapt")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("androidx.navigation.safeargs")
 }
 
 android {
@@ -43,11 +43,18 @@ android {
 }
 
 dependencies {
+    // Core libraries
     implementation("androidx.core:core-ktx:1.12.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+
+    // Testing dependencies
     testImplementation("junit:junit:4.13.2")
+    testImplementation("org.hamcrest:hamcrest:2.2")
+    testImplementation("org.hamcrest:hamcrest-library:2.2")
+    androidTestImplementation("org.hamcrest:hamcrest:2.2")
+    androidTestImplementation("org.hamcrest:hamcrest-library:2.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 
@@ -93,4 +100,22 @@ dependencies {
 
     //worker
     implementation("androidx.work:work-runtime-ktx:2.9.0")
+
+    // AndroidX and Robolectric
+    testImplementation("androidx.test.ext:junit-ktx:'1.1.2'")
+    testImplementation("androidx.test:core-ktx:1.5.0")
+    testImplementation("org.robolectric:robolectric:4.8")
+
+    // InstantTaskExecutorRule
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    androidTestImplementation("androidx.arch.core:core-testing:2.1.0")
+
+    // Timber
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
+    // Dependencies for local unit tests
+    testImplementation("junit:junit:'4.13.2'")
+    testImplementation("org.hamcrest:hamcrest-all:2.2")
+    testImplementation("androidx.arch.core:core-testing:2.1.0")
+    testImplementation("org.robolectric:robolectric:4.8")
 }

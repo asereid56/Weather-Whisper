@@ -39,20 +39,18 @@ class CitiesLocalDataBase(context: Context) : ICitiesLocalDataBase {
         return dao.getALlAlertCity()
     }
 
-//    override suspend fun insertCityToHomeFragment(weatherResponse: WeatherResponse) {
-//        val json = JsonUtils.weatherResponseToJson(weatherResponse)
-//        dao.insertCityToHome(json)
-//    }
-//
-//    override suspend fun deleteAllCitiesFromHomeFragment() {
-//        dao.deleteAllCitiesFromHome()
-//    }
-//
-//    override fun getCityToHomeFragment(): Flow<WeatherResponse?> {
-//        return dao.getCityToHomeFragment().map { json ->
-//            json?.let { JsonUtils.jsonToWeatherResponse(it) }
-//        }
-//    }
+    override suspend fun insertWeatherResponse(weatherResponse: WeatherResponse) {
+        dao.insertWeatherResponse(weatherResponse)
+    }
+
+    override suspend fun deleteAllWeatherResponse() {
+        dao.deleteAllWeatherResponse()
+    }
+
+    override fun getWeatherResponseToHomeFragment(): Flow<WeatherResponse> {
+        return dao.getFirstWeatherResponse()
+    }
+
 
     companion object {
         @Volatile

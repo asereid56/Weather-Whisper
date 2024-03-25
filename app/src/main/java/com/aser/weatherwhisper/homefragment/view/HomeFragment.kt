@@ -32,6 +32,7 @@ import com.aser.weatherwhisper.databinding.FragmentHomeBinding
 import com.aser.weatherwhisper.db.CitiesLocalDataBase
 import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModel
 import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModelFactory
+import com.aser.weatherwhisper.model.Daily
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.model.WeatherResponse
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
@@ -53,6 +54,8 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -93,6 +96,11 @@ class HomeFragment : Fragment() {
                     )
                 }
             } else {
+                viewModel.getCityFromDataBase().onEach { weatherResponse ->
+                    updateUI(weatherResponse)
+                }.launchIn(lifecycleScope)
+                binding.progressBar.visibility = View.GONE
+                binding.progressBar2.visibility = View.GONE
                 Toast.makeText(
                     requireContext(),
                     "No internet connection",
@@ -123,7 +131,9 @@ class HomeFragment : Fragment() {
             binding.swipeRefreshLayout.isEnabled = scrollY == 0
         })
         swipeRefreshLayout.setOnRefreshListener {
-            refreshWeatherData()
+            if (isNetworkConnected()) {
+                refreshWeatherData()
+            }
         }
         return binding.root
     }
@@ -197,67 +207,71 @@ class HomeFragment : Fragment() {
         swipeRefreshLayout.isRefreshing = false
     }
 
-    private fun updateUI(weatherResponse: WeatherResponse) {
-        var city = getNameOfGovernorateFromLatAndLong(
-            requireContext(),
-            weatherResponse.lat,
-            weatherResponse.lon
-        )
-        if (cityNameFromArgs == "defaultValue") {
-            if (city == "") {
-                val timezoneParts = weatherResponse.timezone.split("/")
-                val cityName = timezoneParts.last()
-                binding.countryText.text = cityName
+    private fun updateUI(weatherResponse: WeatherResponse?) {
+        if (weatherResponse != null) {
+            var city = getNameOfGovernorateFromLatAndLong(
+                requireContext(),
+                weatherResponse.lat,
+                weatherResponse.lon
+            )
+            if (cityNameFromArgs == "defaultValue") {
+                if (city == "") {
+                    val timezoneParts = weatherResponse.timezone.split("/")
+                    val cityName = timezoneParts.last()
+                    binding.countryText.text = cityName
+                } else {
+                    binding.countryText.text = city
+                }
             } else {
-                binding.countryText.text = city
+                binding.countryText.text = cityNameFromArgs
             }
+
+
+            val mainWeather = weatherResponse.current.weather.firstOrNull()!!.main
+            if (mainWeather == "Rain") {
+                binding.lottieAnimation.setAnimation(R.raw.rain)
+                binding.lottieAnimation.playAnimation()
+            } else if (mainWeather == "snow" || weatherResponse.current.temp < 0) {
+                binding.lottieAnimation.setAnimation(R.raw.snow)
+                binding.lottieAnimation.playAnimation()
+            } else {
+                binding.lottieAnimation.cancelAnimation()
+                binding.lottieAnimation.visibility = View.GONE
+            }
+
+
+            val dateFormat = SimpleDateFormat("EEE, dd MMM", Locale.getDefault())
+            val formattedDate = dateFormat.format(Date(weatherResponse.current.dt * 1000L))
+            binding.dateText.text = formattedDate
+
+            binding.degreeText.text = formatTemperature(
+                weatherResponse.current.temp.toFloat(),
+                unit
+            )
+
+            val iconCode = weatherResponse.current.weather.firstOrNull()?.icon ?: ""
+            val iconUrl = "https://openweathermap.org/img/wn/$iconCode.png"
+            Glide.with(requireContext()).load(iconUrl).into(binding.weatherIcon)
+
+            binding.weatherDescriptionText.text =
+                weatherResponse.current.weather.firstOrNull()?.description ?: ""
+            binding.pressureDis.text =
+                String.format("%.0f hpa", weatherResponse.current.pressure.toFloat())
+            binding.humidityDis.text =
+                String.format("%.0f %%", weatherResponse.current.humidity.toFloat())
+            binding.windDis.text =
+                formatSpeed(speed, unit, weatherResponse.current.wind_speed.toFloat())
+            binding.cloudDis.text =
+                String.format("%.0f %%", weatherResponse.current.clouds.toFloat())
+            binding.visibilityDis.text =
+                String.format("%.1f m", weatherResponse.current.visibility.toFloat())
+
+            dailyAdapter.submitList(weatherResponse.daily)
+            hourlyAdapter.submitList(weatherResponse.hourly)
+            showHourlyForecastRecycleView()
         } else {
-            binding.countryText.text = cityNameFromArgs
+            Log.e("HomeFragment", "WeatherResponse is null")
         }
-
-
-        val mainWeather = weatherResponse.current.weather.firstOrNull()!!.main
-        if (mainWeather == "Rain") {
-            binding.lottieAnimation.setAnimation(R.raw.rain)
-            binding.lottieAnimation.playAnimation()
-        } else if (mainWeather == "snow" || weatherResponse.current.temp < 0) {
-            binding.lottieAnimation.setAnimation(R.raw.snow)
-            binding.lottieAnimation.playAnimation()
-        } else {
-            binding.lottieAnimation.cancelAnimation()
-            binding.lottieAnimation.visibility = View.GONE
-        }
-
-
-        val dateFormat = SimpleDateFormat("EEE, dd MMM", Locale.getDefault())
-        val formattedDate = dateFormat.format(Date(weatherResponse.current.dt * 1000L))
-        binding.dateText.text = formattedDate
-
-        binding.degreeText.text = formatTemperature(
-            weatherResponse.current.temp.toFloat(),
-            unit
-        )
-
-        val iconCode = weatherResponse.current.weather.firstOrNull()?.icon ?: ""
-        val iconUrl = "https://openweathermap.org/img/wn/$iconCode.png"
-        Glide.with(requireContext()).load(iconUrl).into(binding.weatherIcon)
-
-        binding.weatherDescriptionText.text =
-            weatherResponse.current.weather.firstOrNull()?.description ?: ""
-        binding.pressureDis.text =
-            String.format("%.0f hpa", weatherResponse.current.pressure.toFloat())
-        binding.humidityDis.text =
-            String.format("%.0f %%", weatherResponse.current.humidity.toFloat())
-        binding.windDis.text =
-            formatSpeed(speed, unit, weatherResponse.current.wind_speed.toFloat())
-        binding.cloudDis.text =
-            String.format("%.0f %%", weatherResponse.current.clouds.toFloat())
-        binding.visibilityDis.text =
-            String.format("%.1f m", weatherResponse.current.visibility.toFloat())
-
-        dailyAdapter.submitList(weatherResponse.daily)
-        hourlyAdapter.submitList(weatherResponse.hourly)
-        showHourlyForecastRecycleView()
     }
 
     private fun showHourlyForecastRecycleView() {
@@ -363,6 +377,7 @@ class HomeFragment : Fragment() {
                                             language = language,
                                             units = unit
                                         )
+                                        viewModel.deleteCityFromDataBase()
                                     } else {
                                         viewModel.getWeatherDetails(
                                             latitude = latFromArgs!!.toDouble(),
@@ -370,6 +385,7 @@ class HomeFragment : Fragment() {
                                             language = language,
                                             units = unit
                                         )
+                                        viewModel.deleteCityFromDataBase()
                                     }
                                     refreshWeatherResponseObserver()
                                     fusedLocationProviderClient.removeLocationUpdates(this)
@@ -417,6 +433,7 @@ class HomeFragment : Fragment() {
                         binding.recycleViewForecast.visibility = View.VISIBLE
                         binding.detailsLinear.visibility = View.VISIBLE
                         updateUI(result.data)
+                        viewModel.insertCityToDataBase(result.data)
                     }
 
                     else -> {
@@ -472,4 +489,5 @@ class HomeFragment : Fragment() {
         }
         return governorateName
     }
+
 }

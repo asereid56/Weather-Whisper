@@ -227,7 +227,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
                     val longitude = city.longitude
                     val cityName = city.cityName
 
-                    // Pass the date-time and other parameters to the WorkManager
+                    // Pass the parameters to the WorkManager
                     val inputData = workDataOf(
                         AlertWorker.KEY_LONGITUDE to longitude,
                         AlertWorker.KEY_LATITUDE to latitude,
@@ -248,10 +248,8 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
                     // Enqueue the WorkManager task
                     WorkManager.getInstance(requireContext()).enqueue(alertWorkRequest)
 
-                    Log.d("MapFragment", "Alert work request enqueued successfully")
                 } catch (e: ParseException) {
                     e.printStackTrace()
-                    Log.e("MapFragment", "Error parsing date: ${e.message}", e)
                 }
                 Toast.makeText(requireContext(), "Added to alert", Toast.LENGTH_SHORT).show()
                 viewModel.addToAlert(city)
@@ -292,8 +290,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
                 Toast.makeText(requireContext(), "City not found", Toast.LENGTH_SHORT).show()
             }
         } catch (e: IOException) {
-            Log.e("MapFragment", "Error fetching city: ${e.message}", e)
-            Toast.makeText(requireContext(), "Error fetching city", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), "Check your internet connection", Toast.LENGTH_SHORT).show()
         }
     }
 

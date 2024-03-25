@@ -4,9 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.aser.weatherwhisper.model.City
+import com.aser.weatherwhisper.model.WeatherResponse
 
-@Database(entities = [City::class], version = 1)
+@Database(entities = [City::class , WeatherResponse::class], version = 1)
+@TypeConverters(Converters::class)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun getCityDao(): CityDAO
 

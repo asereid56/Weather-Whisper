@@ -18,6 +18,21 @@
           <timeTargetWasSelectedWithDropDown value="2024-03-22T12:14:29.237338500Z" />
         </State>
       </entry>
+      <entry key="insertCity_deleteIt_returnTrue()">
+        <State />
+      </entry>
+      <entry key="insertCity_getAlertCity_returnTrue()">
+        <State />
+      </entry>
+      <entry key="insertCity_getFavCity()">
+        <State />
+      </entry>
+      <entry key="insertWeatherResponse_deleteIt_ReturnNull()">
+        <State />
+      </entry>
+      <entry key="insertWeatherResponse_getWeatherResponse()">
+        <State />
+      </entry>
     </value>
   </component>
 </project>

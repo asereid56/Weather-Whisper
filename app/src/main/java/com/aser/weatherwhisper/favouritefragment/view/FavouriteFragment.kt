@@ -10,6 +10,8 @@ import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -57,14 +59,14 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
                     is ApiCityState.Loading -> {
                         binding.favRecycleView.visibility = View.INVISIBLE
                         binding.lottie.visibility = View.VISIBLE
-                        binding.lottie.setAnimation(R.raw.favourite)
+                        binding.lottie.setAnimation(R.raw.heart)
                         binding.lottie.playAnimation()
                     }
 
                     is ApiCityState.Success -> {
                         if (result.data.isNullOrEmpty()) {
                             binding.lottie.visibility = View.VISIBLE
-                            binding.lottie.setAnimation(R.raw.favourite)
+                            binding.lottie.setAnimation(R.raw.heart)
                             binding.lottie.playAnimation()
                             binding.favRecycleView.visibility = View.INVISIBLE
 
@@ -82,7 +84,7 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
                             Toast.LENGTH_SHORT
                         ).show()
                         binding.lottie.visibility = View.VISIBLE
-                        binding.lottie.setAnimation(R.raw.favourite)
+                        binding.lottie.setAnimation(R.raw.heart)
                         binding.lottie.playAnimation()
                     }
                 }
@@ -94,6 +96,10 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
             }
 
         })
+        binding.btnAdd.setOnClickListener {
+            val navController = NavHostFragment.findNavController(this@FavouriteFragment)
+            navController.navigate(R.id.action_favouriteFragment_to_mapFragment)
+        }
     }
 
     private fun navigateToHomeFragment(city: City) {

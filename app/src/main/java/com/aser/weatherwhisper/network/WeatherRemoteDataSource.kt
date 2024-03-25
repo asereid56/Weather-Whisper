@@ -3,16 +3,14 @@ package com.aser.weatherwhisper.network
 import android.util.Log
 import com.aser.weatherwhisper.model.WeatherResponse
 import com.aser.weatherwhisper.model.countryname.WeatherResponseCountry
-import com.google.android.gms.common.api.internal.ApiKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.flow
 import kotlin.Exception
 
-class WeatherRemoteDataSource {
+class WeatherRemoteDataSource : IWeatherRemoteDataSource {
     private val weatherService = RetrofitHelper.service
-    private val weatherCountryService = RetrofitHelperCity.service
-    suspend fun getWeatherDetails(
+    private val weatherCountryService = RetrofitHelper.cityService
+    override suspend fun getWeatherDetails(
         latitude: Double,
         longitude: Double,
         language: String,
@@ -25,10 +23,6 @@ class WeatherRemoteDataSource {
                 weatherResponse.body()?.let {
                     emit(it)
                 }
-                Log.i(
-                    "TAG",
-                    "getWeatherDetails: ${weatherResponse.body()} $longitude $latitude $units $language"
-                )
             } else {
                 Log.e(
                     "TAG",
@@ -43,7 +37,7 @@ class WeatherRemoteDataSource {
         }
     }
 
-    suspend fun getWeatherByCity(
+    override suspend fun getWeatherByCity(
         city: String,
         language: String,
         units: String

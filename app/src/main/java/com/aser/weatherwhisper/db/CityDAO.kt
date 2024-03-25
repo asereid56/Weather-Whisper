@@ -23,13 +23,12 @@ interface CityDAO {
     @Delete
     suspend fun deleteCity(city: City): Int
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCityToHome(json: String): Long
-
-    @Query("DELETE FROM home_city_table")
-    suspend fun deleteAllCitiesFromHome(): Int
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertWeatherResponse(weatherResponse: WeatherResponse)
 
     @Query("SELECT * FROM home_city_table LIMIT 1")
-    fun getCityToHomeFragment(): Flow<String?>
+    fun getFirstWeatherResponse(): Flow<WeatherResponse>
 
+    @Query("DELETE FROM home_city_table")
+    suspend fun deleteAllWeatherResponse()
 }

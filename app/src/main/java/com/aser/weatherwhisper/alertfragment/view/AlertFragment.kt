@@ -12,6 +12,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -98,6 +99,10 @@ class AlertFragment : Fragment(), OnDeleteClickListener {
             }
 
         })
+        binding.btnAdd.setOnClickListener {
+            val navController = NavHostFragment.findNavController(this@AlertFragment)
+            navController.navigate(R.id.action_alertFragment_to_mapFragment)
+        }
     }
 
     private fun setUpRecycleView() {

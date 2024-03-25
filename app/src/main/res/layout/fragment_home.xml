@@ -51,8 +51,7 @@
                         android:indeterminateTint="@color/white"
                         app:layout_constraintBottom_toBottomOf="@+id/detailsLinear"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="@+id/snow" />
+                        app:layout_constraintStart_toStartOf="parent" />
 
                     <LinearLayout
                         android:id="@+id/detailsLinear"
@@ -405,7 +404,7 @@
                                     android:layout_marginBottom="10dp"
                                     android:layout_weight="1"
                                     android:scaleType="fitCenter"
-                                    android:src="@drawable/cloud_alert" />
+                                    android:src="@drawable/cloud" />
 
                                 <TextView
                                     android:layout_width="match_parent"

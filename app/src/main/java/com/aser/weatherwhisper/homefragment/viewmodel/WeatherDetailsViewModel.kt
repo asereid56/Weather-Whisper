@@ -3,8 +3,10 @@ package com.aser.weatherwhisper.homefragment.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aser.weatherwhisper.model.WeatherRepository
+import com.aser.weatherwhisper.model.WeatherResponse
 import com.aser.weatherwhisper.utils.ApiWeatherState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -27,5 +29,19 @@ class WeatherDetailsViewModel(private val repo: WeatherRepository) : ViewModel()
             }
         }
     }
+    fun insertCityToDataBase(weatherResponse: WeatherResponse){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.insertWeatherResponse(weatherResponse)
+        }
+    }
+    fun deleteCityFromDataBase(){
+        viewModelScope.launch(Dispatchers.IO) {
+            repo.deleteAllWeatherResponse()
+        }
+    }
+    fun getCityFromDataBase(): Flow<WeatherResponse> {
+        return repo.getWeatherResponseToHomeFragment()
+    }
+
 
 }
