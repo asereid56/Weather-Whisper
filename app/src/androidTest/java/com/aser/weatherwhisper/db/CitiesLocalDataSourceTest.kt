@@ -8,13 +8,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.aser.weatherwhisper.model.City
 import com.aser.weatherwhisper.model.Current
-import com.aser.weatherwhisper.model.Daily
-import com.aser.weatherwhisper.model.Hourly
 import com.aser.weatherwhisper.model.WeatherResponse
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.`is`
-import org.hamcrest.CoreMatchers.not
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.After
@@ -25,26 +22,23 @@ import org.junit.runner.RunWith
 
 @SmallTest
 @RunWith(AndroidJUnit4::class)
-class CityDAOTest {
+class CitiesLocalDataSourceTest {
     private lateinit var dataBase: AppDataBase
+    private lateinit var localDataBase: CitiesLocalDataSource
     private lateinit var dao: CityDAO
     private lateinit var favCity: City
     private lateinit var alertCity: City
     private lateinit var weatherResponse: WeatherResponse
 
-    @get: Rule
+    @get:Rule
     val rule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
-        dataBase = Room.inMemoryDatabaseBuilder(
-            context, AppDataBase::class.java
-        ).build()
+        dataBase = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java).build()
         dao = dataBase.getCityDao()
-
-        // initialize test data
-
+        localDataBase = CitiesLocalDataSource(context)
         favCity = City("Damietta", 12.23, 12.23, "Fav")
         alertCity = City("New Damietta", 12.23, 12.23, "Alert")
         weatherResponse = WeatherResponse(
@@ -65,7 +59,7 @@ class CityDAOTest {
     }
 
     @Test
-    fun insertCity_getFavCity_returnTrue() = runBlocking {
+    fun insertCityToFav_getCityFromFav_returnTrue() = runBlocking {
         //Given
         dao.insertCity(favCity)
 
@@ -73,13 +67,12 @@ class CityDAOTest {
         val result = dao.getAllFavCity().first()
 
         //Then
-
-        assertThat(result, not(nullValue()))
         assertThat(result.contains(favCity), `is`(true))
+        assertThat(result.size, `is`(1))
     }
 
     @Test
-    fun insertCity_getAlertCity_returnTrue() = runBlocking {
+    fun insertCityToAlert_getAllAlertCities_returnTrue() = runBlocking {
         //Given
         dao.insertCity(alertCity)
 
@@ -87,13 +80,12 @@ class CityDAOTest {
         val result = dao.getALlAlertCity().first()
 
         //Then
-
-        assertThat(result, not(nullValue()))
         assertThat(result.contains(alertCity), `is`(true))
+        assertThat(result.size, `is`(1))
     }
 
     @Test
-    fun insertCity_deleteIt_returnEmptyList() = runBlocking {
+    fun insertCity_deleteIt_returnTrue() = runBlocking {
         //Given
         dao.insertCity(favCity)
 
@@ -102,26 +94,23 @@ class CityDAOTest {
 
         //Then
         val result = dao.getAllFavCity().first()
-
-        assertThat(result, `is`(emptyList()))
-
+        assertThat(result.isEmpty(), `is`(true))
     }
 
     @Test
-    fun insertWeatherResponse_getWeatherResponse() = runBlocking {
+    fun insertWeatherResponse_getIt_theyAreEqual() = runBlocking {
         //Given
         dao.insertWeatherResponse(weatherResponse)
 
         //When
-        val result = dao.getFirstWeatherResponse().first()
+        val result = dao.getFirstWeatherResponse()
 
         //Then
-        assert(result == weatherResponse)
-
+        assertThat(result.first(), `is`(weatherResponse))
     }
 
     @Test
-    fun insertWeatherResponse_deleteIt_ReturnNull() = runBlocking {
+    fun insertWeatherResponse_deleteIt_returnNullValue() = runBlocking {
         //Given
         dao.insertWeatherResponse(weatherResponse)
 
@@ -132,4 +121,6 @@ class CityDAOTest {
         val result = dao.getFirstWeatherResponse().first()
         assertThat(result, `is`(nullValue()))
     }
+
+
 }

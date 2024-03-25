@@ -5,7 +5,7 @@ import com.aser.weatherwhisper.model.City
 import com.aser.weatherwhisper.model.WeatherResponse
 import kotlinx.coroutines.flow.Flow
 
-class CitiesLocalDataBase(context: Context) : ICitiesLocalDataBase {
+class CitiesLocalDataSource(context: Context) : ICitiesLocalDataBase {
     private val dao: CityDAO by lazy {
         val db: AppDataBase = AppDataBase.getInstance(context)
         db.getCityDao()
@@ -54,10 +54,10 @@ class CitiesLocalDataBase(context: Context) : ICitiesLocalDataBase {
 
     companion object {
         @Volatile
-        private var instance: CitiesLocalDataBase? = null
-        fun getInstance(context: Context): CitiesLocalDataBase {
+        private var instance: CitiesLocalDataSource? = null
+        fun getInstance(context: Context): CitiesLocalDataSource {
             return instance ?: synchronized(this) {
-                instance ?: CitiesLocalDataBase(context).also {
+                instance ?: CitiesLocalDataSource(context).also {
                     instance = it
                 }
             }

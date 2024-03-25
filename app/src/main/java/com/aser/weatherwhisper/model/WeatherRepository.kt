@@ -2,7 +2,7 @@ package com.aser.weatherwhisper.model
 
 import android.content.Context
 import androidx.work.WorkManager
-import com.aser.weatherwhisper.db.CitiesLocalDataBase
+import com.aser.weatherwhisper.db.CitiesLocalDataSource
 import com.aser.weatherwhisper.db.ICitiesLocalDataBase
 import com.aser.weatherwhisper.model.countryname.WeatherResponseCountry
 import com.aser.weatherwhisper.network.IWeatherRemoteDataSource
@@ -19,12 +19,12 @@ class WeatherRepository private constructor(
 
         fun getInstance(
             weatherRemoteDataSource: WeatherRemoteDataSource,
-            citiesLocalDataBase: CitiesLocalDataBase
+            citiesLocalDataSource: CitiesLocalDataSource
         ): WeatherRepository {
             return instance ?: synchronized(this) {
                 instance ?: WeatherRepository(
                     weatherRemoteDataSource,
-                    citiesLocalDataBase
+                    citiesLocalDataSource
                 ).also {
                     instance = it
                 }

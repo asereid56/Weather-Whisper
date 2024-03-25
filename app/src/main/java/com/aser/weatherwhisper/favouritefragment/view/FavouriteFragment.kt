@@ -10,14 +10,13 @@ import android.widget.Toast
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.databinding.FragmentFavouriteBinding
-import com.aser.weatherwhisper.db.CitiesLocalDataBase
+import com.aser.weatherwhisper.db.CitiesLocalDataSource
 import com.aser.weatherwhisper.favouritefragment.viewmodel.FavouriteCitiesViewModel
 import com.aser.weatherwhisper.favouritefragment.viewmodel.FavouriteFactory
 import com.aser.weatherwhisper.model.City
@@ -41,7 +40,7 @@ class FavouriteFragment : Fragment(), OnDeleteClickListener {
         viewModelFactory = FavouriteFactory(
             WeatherRepository.getInstance(
                 WeatherRemoteDataSource.instance,
-                CitiesLocalDataBase(requireContext())
+                CitiesLocalDataSource(requireContext())
             )
         )
         viewModel = ViewModelProvider(this, viewModelFactory)[FavouriteCitiesViewModel::class.java]

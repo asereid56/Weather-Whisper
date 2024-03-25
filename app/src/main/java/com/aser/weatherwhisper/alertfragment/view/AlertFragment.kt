@@ -1,6 +1,5 @@
 package com.aser.weatherwhisper.alertfragment.view
 
-import android.app.AlertDialog
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -8,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -20,9 +18,7 @@ import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.alertfragment.viewmodel.AlertFactory
 import com.aser.weatherwhisper.alertfragment.viewmodel.AlertViewModel
 import com.aser.weatherwhisper.databinding.FragmentAlertBinding
-import com.aser.weatherwhisper.db.CitiesLocalDataBase
-import com.aser.weatherwhisper.favouritefragment.view.FavAdapter
-import com.aser.weatherwhisper.favouritefragment.view.FavouriteFragmentDirections
+import com.aser.weatherwhisper.db.CitiesLocalDataSource
 import com.aser.weatherwhisper.model.City
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
@@ -44,7 +40,7 @@ class AlertFragment : Fragment(), OnDeleteClickListener {
         alertFactory = AlertFactory(
             WeatherRepository.getInstance(
                 WeatherRemoteDataSource.instance,
-                CitiesLocalDataBase.getInstance(requireContext())
+                CitiesLocalDataSource.getInstance(requireContext())
             )
         )
         viewModel = ViewModelProvider(this, alertFactory)[AlertViewModel::class.java]

@@ -26,13 +26,11 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.airbnb.lottie.LottieAnimationView
 import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.databinding.FragmentHomeBinding
-import com.aser.weatherwhisper.db.CitiesLocalDataBase
+import com.aser.weatherwhisper.db.CitiesLocalDataSource
 import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModel
 import com.aser.weatherwhisper.homefragment.viewmodel.WeatherDetailsViewModelFactory
-import com.aser.weatherwhisper.model.Daily
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.model.WeatherResponse
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
@@ -119,7 +117,7 @@ class HomeFragment : Fragment() {
             WeatherDetailsViewModelFactory(
                 WeatherRepository.getInstance(
                     WeatherRemoteDataSource.instance,
-                    CitiesLocalDataBase(requireContext())
+                    CitiesLocalDataSource(requireContext())
                 )
             )
         viewModel =

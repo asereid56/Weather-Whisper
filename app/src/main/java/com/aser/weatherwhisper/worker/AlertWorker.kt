@@ -6,13 +6,12 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.aser.weatherwhisper.MainActivity
 import com.aser.weatherwhisper.R
-import com.aser.weatherwhisper.db.CitiesLocalDataBase
+import com.aser.weatherwhisper.db.CitiesLocalDataSource
 import com.aser.weatherwhisper.model.City
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.model.WeatherResponse
@@ -68,7 +67,7 @@ class AlertWorker(private val context: Context, params: WorkerParameters) :
     private suspend fun deleteCityFromRoom(city: City) {
         val repo = WeatherRepository.getInstance(
             WeatherRemoteDataSource.instance,
-            CitiesLocalDataBase.getInstance(context)
+            CitiesLocalDataSource.getInstance(context)
         )
         repo.deleteCityFromAlert(city)
     }

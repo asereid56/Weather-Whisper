@@ -7,7 +7,6 @@ import android.location.Geocoder
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,7 @@ import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.aser.weatherwhisper.R
 import com.aser.weatherwhisper.databinding.FragmentMapBinding
-import com.aser.weatherwhisper.db.CitiesLocalDataBase
+import com.aser.weatherwhisper.db.CitiesLocalDataSource
 import com.aser.weatherwhisper.mapFragment.viewmodel.MapViewModel
 import com.aser.weatherwhisper.mapFragment.viewmodel.MapViewModelFactory
 import com.aser.weatherwhisper.model.City
@@ -72,7 +71,7 @@ class MapFragment : Fragment(), OnFavClickListener, OnAlertClickListener, OnMapR
             MapViewModelFactory(
                 WeatherRepository.getInstance(
                     WeatherRemoteDataSource.instance,
-                    CitiesLocalDataBase.getInstance(requireContext())
+                    CitiesLocalDataSource.getInstance(requireContext())
                 )
             )
         viewModel = ViewModelProvider(this, mapFactory)[MapViewModel::class.java]
