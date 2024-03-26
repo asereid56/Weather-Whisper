@@ -14,6 +14,6 @@ interface ICitiesLocalDataBase {
     fun getAlertCities(): Flow<List<City>>
     suspend fun insertWeatherResponse(weatherResponse: WeatherResponse)
     suspend fun deleteAllWeatherResponse()
-    fun getWeatherResponseToHomeFragment(): Flow<WeatherResponse>
+    fun getWeatherResponseToHomeFragment(): Flow<WeatherResponse?>
 
 }

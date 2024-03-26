@@ -9,7 +9,7 @@ import com.aser.weatherwhisper.network.IWeatherRemoteDataSource
 import com.aser.weatherwhisper.network.WeatherRemoteDataSource
 import kotlinx.coroutines.flow.Flow
 
-class WeatherRepository private constructor(
+class WeatherRepository(
     private val weatherRemoteDataSource: IWeatherRemoteDataSource,
     private val citiesLocalDataBase: ICitiesLocalDataBase
 ) : IWeatherRepository {
@@ -86,7 +86,7 @@ class WeatherRepository private constructor(
         citiesLocalDataBase.deleteAllWeatherResponse()
     }
 
-    override fun getWeatherResponseToHomeFragment(): Flow<WeatherResponse> {
+    override fun getWeatherResponseToHomeFragment(): Flow<WeatherResponse?> {
         return citiesLocalDataBase.getWeatherResponseToHomeFragment()
     }
 }

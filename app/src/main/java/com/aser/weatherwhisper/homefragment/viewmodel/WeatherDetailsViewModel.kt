@@ -39,7 +39,7 @@ class WeatherDetailsViewModel(private val repo: WeatherRepository) : ViewModel()
             repo.deleteAllWeatherResponse()
         }
     }
-    fun getCityFromDataBase(): Flow<WeatherResponse> {
+    fun getCityFromDataBase(): Flow<WeatherResponse?> {
         return repo.getWeatherResponseToHomeFragment()
     }
 

@@ -33,5 +33,5 @@ interface IWeatherRepository {
     suspend fun insertWeatherResponse(weatherResponse: WeatherResponse)
 
     suspend fun deleteAllWeatherResponse()
-    fun getWeatherResponseToHomeFragment(): Flow<WeatherResponse>
+    fun getWeatherResponseToHomeFragment(): Flow<WeatherResponse?>
 }
