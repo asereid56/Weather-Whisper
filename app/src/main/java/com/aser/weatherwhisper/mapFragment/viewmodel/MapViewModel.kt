@@ -3,6 +3,7 @@ package com.aser.weatherwhisper.mapFragment.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aser.weatherwhisper.model.City
+import com.aser.weatherwhisper.model.IWeatherRepository
 import com.aser.weatherwhisper.model.WeatherRepository
 import com.aser.weatherwhisper.model.countryname.WeatherResponseCountry
 import com.aser.weatherwhisper.utils.ApiSearchState
@@ -14,7 +15,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class MapViewModel(private val repository: WeatherRepository) : ViewModel() {
+class MapViewModel(private val repository: IWeatherRepository) : ViewModel() {
     private val _cityResponse: MutableStateFlow<ApiSearchState> =
         MutableStateFlow<ApiSearchState>(ApiSearchState.Loading)
 
