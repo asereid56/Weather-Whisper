@@ -2,6 +2,9 @@
 <project version="4">
   <component name="deploymentTargetDropDown">
     <value>
+      <entry key="CityDAOTest">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <targetSelectedWithDropDown>
@@ -17,6 +20,9 @@
           </targetSelectedWithDropDown>
           <timeTargetWasSelectedWithDropDown value="2024-03-28T14:11:50.368356100Z" />
         </State>
+      </entry>
+      <entry key="insertCity_getFavCity_returnTrue()">
+        <State />
       </entry>
     </value>
   </component>

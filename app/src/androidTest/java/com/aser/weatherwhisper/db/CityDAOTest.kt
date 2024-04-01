@@ -73,8 +73,8 @@ class CityDAOTest {
         val result = dao.getAllFavCity().first()
 
         //Then
-
         assertThat(result, not(nullValue()))
+        assertThat(result.size , `is`(1))
         assertThat(result.contains(favCity), `is`(true))
     }
 
@@ -89,6 +89,7 @@ class CityDAOTest {
         //Then
 
         assertThat(result, not(nullValue()))
+        assertThat(result.size , `is`(1))
         assertThat(result.contains(alertCity), `is`(true))
     }
 

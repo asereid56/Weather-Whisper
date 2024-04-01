@@ -69,7 +69,6 @@ class HomeFragment : Fragment() {
     private var unit: String = UNITS_CELSIUS
     private var language: String = LANG_ENGLISH
     private var speed: String = METER
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private var cityNameFromArgs: String? = null
     private var longFromArgs: Float? = null
     private var latFromArgs: Float? = null
@@ -122,17 +121,6 @@ class HomeFragment : Fragment() {
             )
         viewModel =
             ViewModelProvider(this, weatherDetailsFactory)[WeatherDetailsViewModel::class.java]
-
-        swipeRefreshLayout = binding.root.findViewById(R.id.swipeRefreshLayout)
-        binding.swipeRefreshLayout.isEnabled = false
-        binding.nestedScrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { _, _, scrollY, _, _ ->
-            binding.swipeRefreshLayout.isEnabled = scrollY == 0
-        })
-        swipeRefreshLayout.setOnRefreshListener {
-            if (isNetworkConnected()) {
-                refreshWeatherData()
-            }
-        }
         return binding.root
     }
 
@@ -198,12 +186,6 @@ class HomeFragment : Fragment() {
         }
     }
 
-
-    private fun refreshWeatherData() {
-        getFreshLocation()
-        refreshWeatherResponseObserver()
-        swipeRefreshLayout.isRefreshing = false
-    }
 
     private fun updateUI(weatherResponse: WeatherResponse?) {
         if (weatherResponse != null) {
